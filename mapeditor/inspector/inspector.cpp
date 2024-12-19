@@ -28,6 +28,7 @@
 #include "messagewidget.h"
 #include "rewardswidget.h"
 #include "questwidget.h"
+#include "heroartifactswidget.h"
 #include "heroskillswidget.h"
 #include "herospellwidget.h"
 #include "portraitwidget.h"
@@ -91,6 +92,20 @@ void Initializer::initialize(CGDwelling * o)
 	if(!o) return;
 	
 	o->tempOwner = defaultPlayer;
+
+	if(o->ID == Obj::RANDOM_DWELLING || o->ID == Obj::RANDOM_DWELLING_LVL || o->ID == Obj::RANDOM_DWELLING_FACTION)
+	{
+		o->randomizationInfo = CGDwellingRandomizationInfo();
+		if(o->ID == Obj::RANDOM_DWELLING_LVL)
+		{
+			o->randomizationInfo->minLevel = o->subID;
+			o->randomizationInfo->maxLevel = o->subID;
+		}
+		if(o->ID == Obj::RANDOM_DWELLING_FACTION)
+		{
+			o->randomizationInfo->allowedFactions.insert(FactionID(o->subID));
+		}
+	}
 }
 
 void Initializer::initialize(CGGarrison * o)
@@ -319,6 +334,7 @@ void Inspector::updateProperties(CGHeroInstance * o)
 	auto * delegate = new HeroSkillsDelegate(*o);
 	addProperty("Skills", PropertyEditorPlaceholder(), delegate, false);
 	addProperty("Spells", PropertyEditorPlaceholder(), new HeroSpellDelegate(*o), false);
+	addProperty("Artifacts", PropertyEditorPlaceholder(), new HeroArtifactsDelegate(*o), false);
 	
 	if(o->getHeroTypeID().hasValue() || o->ID == Obj::PRISON)
 	{ //Hero type
@@ -334,6 +350,15 @@ void Inspector::updateProperties(CGHeroInstance * o)
 			}
 		}
 		addProperty("Hero type", o->getHeroTypeID().hasValue() ? o->getHeroType()->getNameTranslated() : "", delegate, false);
+	}
+	{
+		const int maxRadius = 60;
+		auto * patrolDelegate = new InspectorDelegate;
+		patrolDelegate->options = { {QObject::tr("No patrol"), QVariant::fromValue(CGHeroInstance::NO_PATROLLING)} };
+		for(int i = 0; i <= maxRadius; ++i)
+			patrolDelegate->options.push_back({ QObject::tr("%n tile(s)", "", i), QVariant::fromValue(i)});
+		auto patrolRadiusText = o->patrol.patrolling ? QObject::tr("%n tile(s)", "", o->patrol.patrolRadius) : QObject::tr("No patrol");
+		addProperty("Patrol radius", patrolRadiusText, patrolDelegate, false);
 	}
 }
 
@@ -710,6 +735,13 @@ void Inspector::setProperty(CGHeroInstance * o, const QString & key, const QVari
 		o->gender = o->getHeroType()->gender;
 		o->randomizeArmy(o->getHeroType()->heroClass->faction);
 		updateProperties(); //updating other properties after change
+	}
+
+	if(key == "Patrol radius")
+	{
+		auto radius = value.toInt();
+		o->patrol.patrolRadius = radius;
+		o->patrol.patrolling = radius != CGHeroInstance::NO_PATROLLING;
 	}
 }
 

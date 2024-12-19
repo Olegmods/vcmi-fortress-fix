@@ -90,7 +90,7 @@ SDL_Surface * CSDL_Ext::newSurface(const Point & dimensions, SDL_Surface * mod) 
 	if (mod->format->palette)
 	{
 		assert(ret->format->palette);
-		assert(ret->format->palette->ncolors == mod->format->palette->ncolors);
+		assert(ret->format->palette->ncolors >= mod->format->palette->ncolors);
 		memcpy(ret->format->palette->colors, mod->format->palette->colors, mod->format->palette->ncolors * sizeof(SDL_Color));
 	}
 	return ret;
@@ -683,12 +683,17 @@ SDL_Surface * CSDL_Ext::scaleSurfaceIntegerFactor(SDL_Surface * surf, int factor
 		case EScalingAlgorithm::BILINEAR:
 			xbrz::bilinearScale(srcPixels, intermediate->w, intermediate->h, dstPixels, ret->w, ret->h);
 			break;
-		case EScalingAlgorithm::XBRZ:
-			tbb::parallel_for(tbb::blocked_range<size_t>(0, intermediate->h, granulation), [factor, srcPixels, dstPixels, intermediate](const tbb::blocked_range<size_t> & r)
+		case EScalingAlgorithm::XBRZ_ALPHA:
+		case EScalingAlgorithm::XBRZ_OPAQUE:
+		{
+			auto format = algorithm == EScalingAlgorithm::XBRZ_OPAQUE ? xbrz::ColorFormat::ARGB_CLAMPED : xbrz::ColorFormat::ARGB;
+			tbb::parallel_for(tbb::blocked_range<size_t>(0, intermediate->h, granulation), [factor, srcPixels, dstPixels, intermediate, format](const tbb::blocked_range<size_t> & r)
 			{
-				xbrz::scale(factor, srcPixels, dstPixels, intermediate->w, intermediate->h, xbrz::ColorFormat::ARGB, {}, r.begin(), r.end());
+
+				xbrz::scale(factor, srcPixels, dstPixels, intermediate->w, intermediate->h, format, {}, r.begin(), r.end());
 			});
 			break;
+		}
 		default:
 			throw std::runtime_error("invalid scaling algorithm!");
 	}

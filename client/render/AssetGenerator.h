@@ -21,4 +21,7 @@ public:
 	static void createBigSpellBook();
 	static void createPlayerColoredBackground(const PlayerColor & player);
 	static void createCombatUnitNumberWindow();
+	static void createCampaignBackground();
+	static void createChroniclesCampaignImages();
+	static void createPaletteShiftedSprites();
 };

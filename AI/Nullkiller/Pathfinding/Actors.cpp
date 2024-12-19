@@ -46,7 +46,7 @@ ChainActor::ChainActor(const CGHeroInstance * hero, HeroRole heroRole, uint64_t 
 	initialMovement = hero->movementPointsRemaining();
 	initialTurn = 0;
 	armyValue = getHeroArmyStrengthWithCommander(hero, hero);
-	heroFightingStrength = hero->getFightingStrength();
+	heroFightingStrength = hero->getHeroStrength();
 	tiCache.reset(new TurnInfo(hero));
 }
 
@@ -374,10 +374,12 @@ HeroExchangeArmy * HeroExchangeMap::tryUpgrade(
 		for(auto & creatureToBuy : buyArmy)
 		{
 			auto targetSlot = target->getSlotFor(creatureToBuy.creID.toCreature());
-
-			target->addToSlot(targetSlot, creatureToBuy.creID, creatureToBuy.count);
-			target->armyCost += creatureToBuy.creID.toCreature()->getFullRecruitCost() * creatureToBuy.count;
-			target->requireBuyArmy = true;
+			if (targetSlot.validSlot())
+			{
+				target->addToSlot(targetSlot, creatureToBuy.creID, creatureToBuy.count);
+				target->armyCost += creatureToBuy.creID.toCreature()->getFullRecruitCost() * creatureToBuy.count;
+				target->requireBuyArmy = true;
+			}
 		}
 	}
 

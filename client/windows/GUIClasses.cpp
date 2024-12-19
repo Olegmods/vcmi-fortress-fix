@@ -896,26 +896,16 @@ CUniversityWindow::CItem::CItem(CUniversityWindow * _parent, int _ID, int X, int
 	pos.x += X;
 	pos.y += Y;
 
-	icon = std::make_shared<CAnimImage>(AnimationPath::builtin("SECSKILL"), _ID * 3 + 3, 0);
+	skill = std::make_shared<CSecSkillPlace>(Point(), CSecSkillPlace::ImageSize::MEDIUM, _ID, 1);
+	skill->setClickPressedCallback([this](const CComponentHolder&, const Point& cursorPosition)
+		{
+			bool skillKnown = parent->hero->getSecSkillLevel(ID);
+			bool canLearn = parent->hero->canLearnSkill(ID);
 
-	pos.h = icon->pos.h;
-	pos.w = icon->pos.w;
-
+			if(!skillKnown && canLearn)
+				GH.windows().createAndPushWindow<CUnivConfirmWindow>(parent, ID, LOCPLINT->cb->getResourceAmount(EGameResID::GOLD) >= 2000);
+		});
 	update();
-}
-
-void CUniversityWindow::CItem::clickPressed(const Point & cursorPosition)
-{
-	bool skillKnown = parent->hero->getSecSkillLevel(ID);
-	bool canLearn =	parent->hero->canLearnSkill(ID);
-
-	if (!skillKnown && canLearn)
-		GH.windows().createAndPushWindow<CUnivConfirmWindow>(parent, ID, LOCPLINT->cb->getResourceAmount(EGameResID::GOLD) >= 2000);
-}
-
-void CUniversityWindow::CItem::showPopupWindow(const Point & cursorPosition)
-{
-	CRClickPopup::createAndPush(CGI->skillh->getByIndex(ID)->getDescriptionTranslated(1), std::make_shared<CComponent>(ComponentType::SEC_SKILL, ID, 1));
 }
 
 void CUniversityWindow::CItem::update()
@@ -941,14 +931,6 @@ void CUniversityWindow::CItem::update()
 	level = std::make_shared<CLabel>(22, 57, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, CGI->generaltexth->levels[0]);
 }
 
-void CUniversityWindow::CItem::hover(bool on)
-{
-	if(on)
-		GH.statusbar()->write(ID.toEntity(VLC)->getNameTranslated());
-	else
-		GH.statusbar()->clear();
-}
-
 CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID building, const IMarket * _market, const std::function<void()> & onWindowClosed)
 	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("UNIVERS1")),
 	hero(_hero),
@@ -968,9 +950,9 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 	}
 	else if(auto uni = dynamic_cast<const CGUniversity *>(_market); uni->appearance)
 	{
-		titlePic = std::make_shared<CAnimImage>(uni->appearance->animationFile, 0);
-		titleStr = uni->title;
-		speechStr = uni->speech;
+		titlePic = std::make_shared<CAnimImage>(uni->appearance->animationFile, 0, 0, 0, 0, CShowableAnim::CREATURE_MODE);
+		titleStr = uni->getObjectName();
+		speechStr = uni->getSpeechTranslated();
 	}
 	else
 	{
@@ -1074,7 +1056,7 @@ CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance
 		if(up->Slots().size() > 0)
 		{
 			titleText = CGI->generaltexth->allTexts[35];
-			boost::algorithm::replace_first(titleText, "%s", up->Slots().begin()->second->type->getNamePluralTranslated());
+			boost::algorithm::replace_first(titleText, "%s", up->Slots().begin()->second->getType()->getNamePluralTranslated());
 		}
 		else
 		{
@@ -1131,6 +1113,9 @@ CHillFortWindow::CHillFortWindow(const CGHeroInstance * visitor, const CGObjectI
 	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 
 	garr = std::make_shared<CGarrisonInt>(Point(108, 60), 18, Point(), hero, nullptr);
+
+	statusbar->write(VLC->generaltexth->translate(dynamic_cast<const HillFort *>(fort)->getDescriptionToolTip()));
+
 	updateGarrisons();
 }
 
@@ -1148,45 +1133,59 @@ void CHillFortWindow::updateGarrisons()
 
 	TResources totalSum; // totalSum[resource ID] = value
 
+	auto getImgIdx = [](CHillFortWindow::State st) -> std::size_t
+	{
+		switch (st)
+		{
+		case State::EMPTY:
+			return 0;
+		case State::UNAVAILABLE:
+		case State::ALREADY_UPGRADED:
+			return 1;
+		default:
+			return static_cast<std::size_t>(st);
+		}
+	};
+
 	for(int i=0; i<slotsCount; i++)
 	{
 		std::fill(costs[i].begin(), costs[i].end(), 0);
-		int newState = getState(SlotID(i));
-		if(newState != -1)
+		State newState = getState(SlotID(i));
+		if(newState != State::EMPTY)
 		{
 			UpgradeInfo info;
 			LOCPLINT->cb->fillUpgradeInfo(hero, SlotID(i), info);
 			if(info.newID.size())//we have upgrades here - update costs
 			{
-				costs[i] = info.cost[0] * hero->getStackCount(SlotID(i));
+				costs[i] = info.cost.back() * hero->getStackCount(SlotID(i));
 				totalSum += costs[i];
 			}
 		}
 
 		currState[i] = newState;
-		upgrade[i]->setImage(AnimationPath::builtin(currState[i] == -1 ? slotImages[0] : slotImages[currState[i]]));
-		upgrade[i]->block(currState[i] == -1);
+		upgrade[i]->setImage(AnimationPath::builtin(slotImages[getImgIdx(currState[i])]));
+		upgrade[i]->block(currState[i] == State::EMPTY);
 		upgrade[i]->addHoverText(EButtonState::NORMAL, getTextForSlot(SlotID(i)));
 	}
 
 	//"Upgrade all" slot
-	int newState = 2;
+	State newState = State::MAKE_UPGRADE;
 	{
 		TResources myRes = LOCPLINT->cb->getResourceAmount();
 
 		bool allUpgraded = true;//All creatures are upgraded?
 		for(int i=0; i<slotsCount; i++)
-			allUpgraded &= currState[i] == 1 || currState[i] == -1;
+			allUpgraded &= currState[i] == State::ALREADY_UPGRADED || currState[i] == State::EMPTY || currState[i] == State::UNAVAILABLE;
 
-		if(allUpgraded)
-			newState = 1;
+		if (allUpgraded)
+			newState = State::ALREADY_UPGRADED;
 
 		if(!totalSum.canBeAfforded(myRes))
-			newState = 0;
+			newState = State::UNAFFORDABLE;
 	}
 
 	currState[slotsCount] = newState;
-	upgradeAll->setImage(AnimationPath::builtin(allImages[newState]));
+	upgradeAll->setImage(AnimationPath::builtin(allImages[static_cast<std::size_t>(newState)]));
 
 	garr->recreateSlots();
 
@@ -1199,7 +1198,7 @@ void CHillFortWindow::updateGarrisons()
 			slotLabels[i][j]->setText("");
 		}
 		//if can upgrade or can not afford, draw cost
-		if(currState[i] == 0 || currState[i] == 2)
+		if(currState[i] == State::UNAFFORDABLE || currState[i] == State::MAKE_UPGRADE)
 		{
 			if(costs[i].nonZero())
 			{
@@ -1244,24 +1243,30 @@ void CHillFortWindow::updateGarrisons()
 
 void CHillFortWindow::makeDeal(SlotID slot)
 {
-	assert(slot.getNum()>=0);
-	int offset = (slot.getNum() == slotsCount)?2:0;
+	assert(slot.getNum() >= 0);
+	int offset = (slot.getNum() == slotsCount) ? 2 : 0;
 	switch(currState[slot.getNum()])
 	{
-		case 0:
-			LOCPLINT->showInfoDialog(CGI->generaltexth->allTexts[314 + offset], std::vector<std::shared_ptr<CComponent>>(), soundBase::sound_todo);
-			break;
-		case 1:
+		case State::ALREADY_UPGRADED:
 			LOCPLINT->showInfoDialog(CGI->generaltexth->allTexts[313 + offset], std::vector<std::shared_ptr<CComponent>>(), soundBase::sound_todo);
 			break;
-		case 2:
-			for(int i=0; i<slotsCount; i++)
+		case State::UNAFFORDABLE:
+			LOCPLINT->showInfoDialog(CGI->generaltexth->allTexts[314 + offset], std::vector<std::shared_ptr<CComponent>>(), soundBase::sound_todo);
+			break;
+		case State::UNAVAILABLE:
+		{
+			std::string message = VLC->generaltexth->translate(dynamic_cast<const HillFort *>(fort)->getUnavailableUpgradeMessage());
+			LOCPLINT->showInfoDialog(message, std::vector<std::shared_ptr<CComponent>>(), soundBase::sound_todo);
+			break;
+		}
+		case State::MAKE_UPGRADE:
+			for(int i = 0; i < slotsCount; i++)
 			{
-				if(slot.getNum() ==i || ( slot.getNum() == slotsCount && currState[i] == 2 ))//this is activated slot or "upgrade all"
+				if(slot.getNum() == i || ( slot.getNum() == slotsCount && currState[i] == State::MAKE_UPGRADE ))//this is activated slot or "upgrade all"
 				{
 					UpgradeInfo info;
 					LOCPLINT->cb->fillUpgradeInfo(hero, SlotID(i), info);
-					LOCPLINT->cb->upgradeCreature(hero, SlotID(i), info.newID[0]);
+					LOCPLINT->cb->upgradeCreature(hero, SlotID(i), info.newID.back());
 				}
 			}
 			break;
@@ -1283,22 +1288,28 @@ std::string CHillFortWindow::getTextForSlot(SlotID slot)
 	return str;
 }
 
-int CHillFortWindow::getState(SlotID slot)
+CHillFortWindow::State CHillFortWindow::getState(SlotID slot)
 {
 	TResources myRes = LOCPLINT->cb->getResourceAmount();
 
-	if(hero->slotEmpty(slot))//no creature here
-		return -1;
+	if(hero->slotEmpty(slot))
+		return State::EMPTY;
 
 	UpgradeInfo info;
 	LOCPLINT->cb->fillUpgradeInfo(hero, slot, info);
-	if(!info.newID.size())//already upgraded
-		return 1;
+	if (info.newID.empty())
+	{
+		// Hill Fort may limit level of upgradeable creatures, e.g. mini Hill Fort from HOTA
+		if (hero->getCreature(slot)->hasUpgrades())
+			return State::UNAVAILABLE;
 
-	if(!(info.cost[0] * hero->getStackCount(slot)).canBeAfforded(myRes))
-		return 0;
+		return State::ALREADY_UPGRADED;
+	}
 
-	return 2;//can upgrade
+	if(!(info.cost.back() * hero->getStackCount(slot)).canBeAfforded(myRes))
+		return State::UNAFFORDABLE;
+
+	return State::MAKE_UPGRADE;
 }
 
 CThievesGuildWindow::CThievesGuildWindow(const CGObjectInstance * _owner):
@@ -1497,7 +1508,7 @@ CObjectListWindow::CObjectListWindow(const std::vector<int> & _items, std::share
 	itemsVisible = items;
 
 	init(titleWidget_, _title, _descr, searchBoxEnabled);
-	list->scrollTo(initialSelection - 4); // -4 is for centering (list have 9 elements)
+	list->scrollTo(std::min(static_cast<int>(initialSelection + 4), static_cast<int>(items.size() - 1))); // 4 is for centering (list have 9 elements)
 }
 
 CObjectListWindow::CObjectListWindow(const std::vector<std::string> & _items, std::shared_ptr<CIntObject> titleWidget_, std::string _title, std::string _descr, std::function<void(int)> Callback, size_t initialSelection, std::vector<std::shared_ptr<IImage>> images, bool searchBoxEnabled)
@@ -1517,7 +1528,7 @@ CObjectListWindow::CObjectListWindow(const std::vector<std::string> & _items, st
 	itemsVisible = items;
 
 	init(titleWidget_, _title, _descr, searchBoxEnabled);
-	list->scrollTo(initialSelection - 4); // -4 is for centering (list have 9 elements)
+	list->scrollTo(std::min(static_cast<int>(initialSelection + 4), static_cast<int>(items.size() - 1))); // 4 is for centering (list have 9 elements)
 }
 
 void CObjectListWindow::init(std::shared_ptr<CIntObject> titleWidget_, std::string _title, std::string _descr, bool searchBoxEnabled)
@@ -1642,7 +1653,7 @@ void CObjectListWindow::keyPressed(EShortcut key)
 	}
 
 	vstd::abetween<int>(sel, 0, itemsVisible.size()-1);
-	list->scrollTo(sel - 4); // -4 is for centering (list have 9 elements)
+	list->scrollTo(sel);
 	changeSelection(sel);
 }
 
@@ -1659,21 +1670,26 @@ VideoWindow::VideoWindow(const VideoPath & video, const ImagePath & rim, bool sh
 	if(!rim.empty())
 	{
 		setBackground(rim);
-		videoPlayer = std::make_shared<VideoWidgetOnce>(Point(80, 186), video, true, [this](){ exit(false); });
+		videoPlayer = std::make_shared<VideoWidgetOnce>(Point(80, 186), video, true, this);
 		pos = center(Rect(0, 0, 800, 600));
 	}
 	else
 	{
 		blackBackground = std::make_shared<GraphicalPrimitiveCanvas>(Rect(0, 0, GH.screenDimensions().x, GH.screenDimensions().y));
-		videoPlayer = std::make_shared<VideoWidgetOnce>(Point(0, 0), video, true, scaleFactor, [this](){ exit(false); });
+		videoPlayer = std::make_shared<VideoWidgetOnce>(Point(0, 0), video, true, scaleFactor, this);
 		pos = center(Rect(0, 0, videoPlayer->pos.w, videoPlayer->pos.h));
 		blackBackground->addBox(Point(0, 0), Point(pos.x, pos.y), Colors::BLACK);
 	}
 
 	if(backgroundAroundWindow)
 		backgroundAroundWindow->pos.moveTo(Point(0, 0));
-
 }
+
+void VideoWindow::onVideoPlaybackFinished()
+{
+	exit(false);
+}
+
 
 void VideoWindow::exit(bool skipped)
 {
@@ -1692,7 +1708,7 @@ void VideoWindow::keyPressed(EShortcut key)
 	exit(true);
 }
 
-bool VideoWindow::receiveEvent(const Point & position, int eventType) const
+void VideoWindow::notFocusedClick()
 {
-	return true;  // capture click also outside of window
+	exit(true);
 }

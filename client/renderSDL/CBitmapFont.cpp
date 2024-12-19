@@ -99,9 +99,7 @@ static AtlasLayout doAtlasPacking(const std::map<int, Point> & images)
 void CBitmapFont::loadFont(const ResourcePath & resource, std::unordered_map<CodePoint, EntryFNT> & loadedChars)
 {
 	auto data = CResourceHandler::get()->load(resource)->readAll();
-	std::string modName = VLC->modh->findResourceOrigin(resource);
-	std::string modLanguage = VLC->modh->getModLanguage(modName);
-	std::string modEncoding = Languages::getLanguageOptions(modLanguage).encoding;
+	std::string modEncoding = VLC->modh->findResourceEncoding(resource);
 
 	height = data.first[5];
 
@@ -203,7 +201,7 @@ CBitmapFont::CBitmapFont(const std::string & filename):
 		static const std::map<std::string, EScalingAlgorithm> filterNameToEnum = {
 			{ "nearest", EScalingAlgorithm::NEAREST},
 			{ "bilinear", EScalingAlgorithm::BILINEAR},
-			{ "xbrz", EScalingAlgorithm::XBRZ}
+			{ "xbrz", EScalingAlgorithm::XBRZ_ALPHA}
 		};
 
 		auto filterName = settings["video"]["fontUpscalingFilter"].String();

@@ -23,7 +23,7 @@
 #include "../lib/mapping/CMapEditManager.h"
 #include "../lib/mapping/ObstacleProxy.h"
 #include "../lib/modding/CModHandler.h"
-#include "../lib/modding/CModInfo.h"
+#include "../lib/modding/ModDescription.h"
 #include "../lib/TerrainHandler.h"
 #include "../lib/CSkillHandler.h"
 #include "../lib/spells/CSpellHandler.h"
@@ -429,10 +429,10 @@ void MapController::commitObstacleFill(int level)
 	for(auto & t : selection)
 	{
 		auto tl = _map->getTile(t);
-		if(tl.blocked || tl.visitable)
+		if(tl.blocked() || tl.visitable())
 			continue;
 		
-		auto terrain = tl.terType->getId();
+		auto terrain = tl.getTerrainID();
 		_obstaclePainters[terrain]->addBlockedTile(t);
 	}
 	
@@ -640,9 +640,19 @@ ModCompatibilityInfo MapController::modAssessmentMap(const CMap & map)
 					continue;
 				extractEntityMod(spellID.toEntity(VLC));
 			}
+
+			for(const auto & [_, slotInfo] : hero->artifactsWorn)
+			{
+				extractEntityMod(slotInfo.artifact->getTypeId().toEntity(VLC));
+			}
+
+			for(const auto & art : hero->artifactsInBackpack)
+			{
+				extractEntityMod(art.artifact->getTypeId().toEntity(VLC));
+			}
 		}
 	}
 
-	//TODO: terrains, artifacts?
+	//TODO: terrains?
 	return result;
 }
