@@ -178,7 +178,6 @@ public:
 	virtual void visitLobbyForceSetPlayer(LobbyForceSetPlayer & pack) {}
 	virtual void visitLobbyShowMessage(LobbyShowMessage & pack) {}
 	virtual void visitLobbyPvPAction(LobbyPvPAction & pack) {}
-	virtual void visitLobbyDelete(LobbyDelete & pack) {}
 	virtual void visitSaveLocalState(SaveLocalState & pack) {}
 };
 

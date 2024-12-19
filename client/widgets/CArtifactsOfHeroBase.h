@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "CComponentHolder.h"
+#include "CArtPlace.h"
 #include "Scrollable.h"
 
 #include "../gui/Shortcut.h"
@@ -33,9 +33,9 @@ public:
 	
 	CArtifactsOfHeroBase();
 	virtual void putBackPickedArtifact();
-	virtual void clickPressedArtPlace(CComponentHolder & artPlace, const Point & cursorPosition);
-	virtual void showPopupArtPlace(CComponentHolder & artPlace, const Point & cursorPosition);
-	virtual void gestureArtPlace(CComponentHolder & artPlace, const Point & cursorPosition);
+	virtual void clickPrassedArtPlace(CArtPlace & artPlace, const Point & cursorPosition);
+	virtual void showPopupArtPlace(CArtPlace & artPlace, const Point & cursorPosition);
+	virtual void gestureArtPlace(CArtPlace & artPlace, const Point & cursorPosition);
 	virtual void setHero(const CGHeroInstance * hero);
 	virtual const CGHeroInstance * getHero() const;
 	virtual void scrollBackpack(bool left);
@@ -50,8 +50,6 @@ public:
 	void enableGesture();
 	const CArtifactInstance * getArt(const ArtifactPosition & slot) const;
 	void enableKeyboardShortcuts();
-	void setClickPressedArtPlacesCallback(const CArtPlace::ClickFunctor & callback) const;
-	void setShowPopupArtPlacesCallback(const CArtPlace::ClickFunctor & callback) const;
 
 	const CGHeroInstance * curHero;
 	ArtPlaceMap artWorn;

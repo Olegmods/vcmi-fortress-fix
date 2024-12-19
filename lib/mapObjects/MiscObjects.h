@@ -437,12 +437,6 @@ protected:
 public:
 	using CGObjectInstance::CGObjectInstance;
 
-	std::string getPopupText(PlayerColor player) const override;
-	std::string getPopupText(const CGHeroInstance * hero) const override;
-
-	std::string getDescriptionToolTip() const;
-	std::string getUnavailableUpgradeMessage() const;
-
 	template <typename Handler> void serialize(Handler &h)
 	{
 		h & static_cast<CGObjectInstance&>(*this);

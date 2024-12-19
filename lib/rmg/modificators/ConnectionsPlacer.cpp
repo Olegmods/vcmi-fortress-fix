@@ -143,7 +143,7 @@ void ConnectionsPlacer::forcePortalConnection(const rmg::ZoneConnection & connec
 void ConnectionsPlacer::selfSideDirectConnection(const rmg::ZoneConnection & connection)
 {
 	bool success = false;
-	auto otherZoneId = connection.getOtherZoneId(zone.getId());
+	auto otherZoneId = (connection.getZoneA() == zone.getId() ? connection.getZoneB() : connection.getZoneA());
 	auto & otherZone = map.getZones().at(otherZoneId);
 	bool createRoad = shouldGenerateRoad(connection);
 	
@@ -185,8 +185,8 @@ void ConnectionsPlacer::selfSideDirectConnection(const rmg::ZoneConnection & con
 							return 1.f / (1.f + border.distanceSqr(d));
 						};
 
-						auto ourArea = zone.areaForRoads();
-						auto theirArea = otherZone->areaForRoads();
+						auto ourArea = zone.areaPossible() + zone.freePaths();
+						auto theirArea = otherZone->areaPossible() + otherZone->freePaths();
 						theirArea.add(potentialPos);
 						rmg::Path ourPath(ourArea);
 						rmg::Path theirPath(theirArea);
@@ -278,22 +278,24 @@ void ConnectionsPlacer::selfSideDirectConnection(const rmg::ZoneConnection & con
 			assert(zone.getModificator<ObjectManager>());
 			auto & manager = *zone.getModificator<ObjectManager>();
 			auto * monsterType = manager.chooseGuard(connection.getGuardStrength(), true);
-		
+			
 			rmg::Area border(zone.area()->getBorder());
 			border.unite(otherZone->area()->getBorder());
-
-			auto localCostFunction = rmg::Path::createCurvedCostFunction(zone.area()->getBorder());
-			auto otherCostFunction = rmg::Path::createCurvedCostFunction(otherZone->area()->getBorder());
-
-			auto ourArea = zone.areaForRoads();
-			auto theirArea = otherZone->areaForRoads();
+			
+			auto costFunction = [&border](const int3 & s, const int3 & d)
+			{
+				return 1.f / (1.f + border.distanceSqr(d));
+			};
+			
+			auto ourArea = zone.areaPossible() + zone.freePaths();
+			auto theirArea = otherZone->areaPossible() + otherZone->freePaths();
 			theirArea.add(guardPos);
 			rmg::Path ourPath(ourArea);
 			rmg::Path theirPath(theirArea);
 			ourPath.connect(zone.freePaths().get());
-			ourPath = ourPath.search(guardPos, true, localCostFunction);
+			ourPath = ourPath.search(guardPos, true, costFunction);
 			theirPath.connect(otherZone->freePaths().get());
-			theirPath = theirPath.search(guardPos, true, otherCostFunction);
+			theirPath = theirPath.search(guardPos, true, costFunction);
 			
 			if(ourPath.valid() && theirPath.valid())
 			{
@@ -325,9 +327,10 @@ void ConnectionsPlacer::selfSideDirectConnection(const rmg::ZoneConnection & con
 
 					assert(otherZone->getModificator<RoadPlacer>());
 					otherZone->getModificator<RoadPlacer>()->addRoadNode(roadNode);
+
+					assert(otherZone->getModificator<ConnectionsPlacer>());
+					otherZone->getModificator<ConnectionsPlacer>()->otherSideConnection(connection);
 				}
-				assert(otherZone->getModificator<ConnectionsPlacer>());
-				otherZone->getModificator<ConnectionsPlacer>()->otherSideConnection(connection);
 
 				success = true;
 			}
@@ -415,14 +418,11 @@ void ConnectionsPlacer::selfSideIndirectConnection(const rmg::ZoneConnection & c
 			
 			if(path1.valid() && path2.valid())
 			{
-				manager.placeObject(rmgGate1, guarded1, true, allowRoad);
-				managerOther.placeObject(rmgGate2, guarded2, true, allowRoad);
-
-				replaceWithCurvedPath(path1, zone, rmgGate1.getVisitablePosition());
-				replaceWithCurvedPath(path2, *otherZone, rmgGate2.getVisitablePosition());
-
 				zone.connectPath(path1);
 				otherZone->connectPath(path2);
+				
+				manager.placeObject(rmgGate1, guarded1, true, allowRoad);
+				managerOther.placeObject(rmgGate2, guarded2, true, allowRoad);
 				
 				assert(otherZone->getModificator<ConnectionsPlacer>());
 				otherZone->getModificator<ConnectionsPlacer>()->otherSideConnection(connection);

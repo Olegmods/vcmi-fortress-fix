@@ -344,7 +344,7 @@ rmg::Path ObjectManager::placeAndConnectObject(const rmg::Area & searchArea, rmg
 {
 	int3 pos;
 	auto possibleArea = searchArea;
-	auto cachedArea = zone.areaForRoads();
+	auto cachedArea = zone.areaPossible() + zone.freePaths();
 	while(true)
 	{
 		pos = findPlaceForObject(possibleArea, obj, weightFunction, optimizer);
@@ -419,9 +419,6 @@ bool ObjectManager::createMonoliths()
 			return false;
 		}
 		
-		// Once it can be created, replace with curved path
-		replaceWithCurvedPath(path, zone, rmgObject.getVisitablePosition());
-		
 		zone.connectPath(path);
 		placeObject(rmgObject, guarded, true, objInfo.createRoad);
 	}
@@ -451,11 +448,6 @@ bool ObjectManager::createRequiredObjects()
 		{
 			logGlobal->error("Failed to fill zone %d due to lack of space", zone.getId());
 			return false;
-		}
-		if (objInfo.createRoad)
-		{
-			// Once valid path can be created, replace with curved path
-			replaceWithCurvedPath(path, zone, rmgObject.getVisitablePosition());
 		}
 		
 		zone.connectPath(path);

@@ -275,7 +275,7 @@ std::string MapRendererAdventureContext::overlayText(const int3 & coordinates) c
 
 	const auto & tile = getMapTile(coordinates);
 
-	if (!tile.visitable())
+	if (!tile.visitable)
 		return {};
 
 	return tile.visitableObjects.back()->getObjectName();
@@ -288,7 +288,7 @@ ColorRGBA MapRendererAdventureContext::overlayTextColor(const int3 & coordinates
 
 	const auto & tile = getMapTile(coordinates);
 
-	if (!tile.visitable())
+	if (!tile.visitable)
 		return {};
 
 	const auto * object = tile.visitableObjects.back();
@@ -548,10 +548,7 @@ size_t MapRendererSpellViewContext::overlayImageIndex(const int3 & coordinates) 
 			return iconIndex;
 	}
 
-	if (MapRendererBaseContext::isVisible(coordinates))
-		return MapRendererWorldViewContext::overlayImageIndex(coordinates);
-	else
-		return std::numeric_limits<size_t>::max();
+	return MapRendererWorldViewContext::overlayImageIndex(coordinates);
 }
 
 MapRendererPuzzleMapContext::MapRendererPuzzleMapContext(const MapRendererContextState & viewState)

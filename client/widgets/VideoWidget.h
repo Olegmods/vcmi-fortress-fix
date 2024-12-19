@@ -12,27 +12,21 @@
 #include "../gui/CIntObject.h"
 
 #include "../lib/filesystem/ResourcePath.h"
-#include "../lib/json/JsonNode.h"
 
-class IVideoHolder;
 class IVideoInstance;
-class CMultiLineLabel;
 
 class VideoWidgetBase : public CIntObject
 {
 	std::unique_ptr<IVideoInstance> videoInstance;
-	std::unique_ptr<CMultiLineLabel> subTitle;
 
 	std::pair<std::unique_ptr<ui8[]>, si64> audioData = {nullptr, 0};
 	int audioHandle = -1;
 	bool playAudio = false;
 	float scaleFactor = 1.0;
-	JsonNode subTitleData;
 
 	void loadAudio(const VideoPath & file);
 	void startAudio();
 	void stopAudio();
-	std::string getSubTitleLine(double timestamp);
 
 protected:
 	VideoWidgetBase(const Point & position, const VideoPath & video, bool playAudio);
@@ -65,10 +59,10 @@ public:
 
 class VideoWidgetOnce final: public VideoWidgetBase
 {
-	IVideoHolder * owner;
+	std::function<void()> callback;
 
 	void onPlaybackFinished() final;
 public:
-	VideoWidgetOnce(const Point & position, const VideoPath & video, bool playAudio, IVideoHolder * owner);
-	VideoWidgetOnce(const Point & position, const VideoPath & video, bool playAudio, float scaleFactor, IVideoHolder * owner);
+	VideoWidgetOnce(const Point & position, const VideoPath & video, bool playAudio, const std::function<void()> & callback);
+	VideoWidgetOnce(const Point & position, const VideoPath & video, bool playAudio, float scaleFactor, const std::function<void()> & callback);
 };

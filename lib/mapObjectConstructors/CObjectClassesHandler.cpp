@@ -523,7 +523,7 @@ void CObjectClassesHandler::afterLoadFinalization()
 
 			obj->afterLoadFinalization();
 			if(obj->getTemplates().empty())
-				logMod->debug("No templates found for %s:%s", entry->getJsonKey(), obj->getJsonKey());
+				logGlobal->warn("No templates found for %s:%s", entry->getJsonKey(), obj->getJsonKey());
 		}
 	}
 

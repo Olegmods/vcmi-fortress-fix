@@ -50,10 +50,10 @@ ColorRGBA CMinimapInstance::getTileColor(const int3 & pos) const
 			return graphics->playerColors[player.getNum()];
 	}
 
-	if (tile->blocked() && !tile->visitable())
-		return tile->getTerrain()->minimapBlocked;
+	if (tile->blocked && (!tile->visitable))
+		return tile->terType->minimapBlocked;
 	else
-		return tile->getTerrain()->minimapUnblocked;
+		return tile->terType->minimapUnblocked;
 }
 
 void CMinimapInstance::refreshTile(const int3 &tile)

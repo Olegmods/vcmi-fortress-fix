@@ -881,10 +881,9 @@ uint32_t CastAnimation::getAttackClimaxFrame() const
 	return maxFrames / 2;
 }
 
-EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, int effects, float transparencyFactor, bool reversed):
+EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, int effects, bool reversed):
 	BattleAnimation(owner),
-	animation(GH.renderHandler().loadAnimation(animationName, EImageBlitMode::SIMPLE)),
-	transparencyFactor(transparencyFactor),
+	animation(GH.renderHandler().loadAnimation(animationName, EImageBlitMode::ALPHA)),
 	effectFlags(effects),
 	effectFinished(false),
 	reversed(reversed)
@@ -893,32 +892,32 @@ EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & 
 }
 
 EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, std::vector<BattleHex> hex, int effects, bool reversed):
-	EffectAnimation(owner, animationName, effects, 1.0f, reversed)
+	EffectAnimation(owner, animationName, effects, reversed)
 {
 	battlehexes = hex;
 }
 
-EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, BattleHex hex, int effects, float transparencyFactor, bool reversed):
-	EffectAnimation(owner, animationName, effects, transparencyFactor, reversed)
+EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, BattleHex hex, int effects, bool reversed):
+	EffectAnimation(owner, animationName, effects, reversed)
 {
 	assert(hex.isValid());
 	battlehexes.push_back(hex);
 }
 
 EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, std::vector<Point> pos, int effects, bool reversed):
-	EffectAnimation(owner, animationName, effects, 1.0f, reversed)
+	EffectAnimation(owner, animationName, effects, reversed)
 {
 	positions = pos;
 }
 
 EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, Point pos, int effects, bool reversed):
-	EffectAnimation(owner, animationName, effects, 1.0f, reversed)
+	EffectAnimation(owner, animationName, effects, reversed)
 {
 	positions.push_back(pos);
 }
 
 EffectAnimation::EffectAnimation(BattleInterface & owner, const AnimationPath & animationName, Point pos, BattleHex hex, int effects, bool reversed):
-	EffectAnimation(owner, animationName, effects, 1.0f, reversed)
+	EffectAnimation(owner, animationName, effects, reversed)
 {
 	assert(hex.isValid());
 	battlehexes.push_back(hex);
@@ -952,7 +951,6 @@ bool EffectAnimation::init()
 	be.effectID = ID;
 	be.animation = animation;
 	be.currentFrame = 0;
-	be.transparencyFactor = transparencyFactor;
 	be.type = reversed ? BattleEffect::AnimType::REVERSE : BattleEffect::AnimType::DEFAULT;
 
 	for (size_t i = 0; i < std::max(battlehexes.size(), positions.size()); ++i)

@@ -450,7 +450,7 @@ void CTownList::CTownItem::open()
 
 void CTownList::CTownItem::showTooltip()
 {
-	CRClickPopup::createAndPush(town, pos.center());
+	CRClickPopup::createAndPush(town, GH.getCursorPosition());
 }
 
 void CTownList::CTownItem::gesture(bool on, const Point & initialPosition, const Point & finalPosition)

@@ -45,12 +45,6 @@ enum class TouchState
 	// UP -> transition to IDLE
 	TAP_DOWN_PANNING,
 
-	// single finger is moving across screen
-	// DOWN -> ignored
-	// MOTION -> emit panning event
-	// UP -> transition to TAP_DOWN_LONG_AWAIT
-	TAP_DOWN_PANNING_POPUP,
-
 	// two fingers are touching the screen
 	// DOWN -> ??? how to handle 3rd finger? Ignore?
 	// MOTION -> emit pinch event
@@ -65,7 +59,7 @@ enum class TouchState
 
 	// right-click popup is active, waiting for new tap to hide popup
 	// DOWN -> ignored
-	// MOTION -> transition to TAP_DOWN_PANNING_POPUP
+	// MOTION -> ignored
 	// UP -> transition to IDLE, generate closePopup() event
 	TAP_DOWN_LONG_AWAIT,
 };
@@ -85,7 +79,7 @@ struct TouchInputParameters
 	uint32_t doubleTouchToleranceDistance = 50;
 
 	/// moving finger for distance larger than specified will be qualified as panning gesture instead of long press
-	uint32_t panningSensitivityThreshold = 15;
+	uint32_t panningSensitivityThreshold = 10;
 
 	/// gesture will be qualified as pinch if distance between fingers is at least specified here
 	uint32_t pinchSensitivityThreshold = 10;

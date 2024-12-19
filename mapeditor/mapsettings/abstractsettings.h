@@ -14,8 +14,6 @@
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 
-Q_DECLARE_METATYPE(int3)
-
 //parses date for lose condition (1m 1w 1d)
 int expiredDate(const QString & date);
 QString expiredDate(int date);

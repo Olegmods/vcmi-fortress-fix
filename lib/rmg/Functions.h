@@ -34,8 +34,6 @@ public:
 	}
 };
 
-void replaceWithCurvedPath(rmg::Path & path, const Zone & zone, const int3 & src, bool onlyStraight = true);
-
 rmg::Tileset collectDistantTiles(const Zone & zone, int distance);
 
 int chooseRandomAppearance(vstd::RNG & generator, si32 ObjID, TerrainId terrain);

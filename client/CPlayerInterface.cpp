@@ -238,7 +238,7 @@ void CPlayerInterface::performAutosave()
 				std::string name = cb->getMapHeader()->name.toString();
 				int txtlen = TextOperations::getUnicodeCharactersCount(name);
 
-				TextOperations::trimRightUnicode(name, std::max(0, txtlen - 14));
+				TextOperations::trimRightUnicode(name, std::max(0, txtlen - 15));
 				auto const & isSymbolIllegal = [&](char c) {
 					static const std::string forbiddenChars("\\/:*?\"<>| ");
 
@@ -249,7 +249,7 @@ void CPlayerInterface::performAutosave()
 				};
 				std::replace_if(name.begin(), name.end(), isSymbolIllegal, '_' );
 
-				prefix = vstd::getFormattedDateTime(cb->getStartInfo()->startTime, "%Y-%m-%d_%H-%M") + "_" + name + "/";
+				prefix = name + "_" + cb->getStartInfo()->startTimeIso8601 + "/";
 			}
 		}
 
@@ -402,18 +402,6 @@ void CPlayerInterface::heroKilled(const CGHeroInstance* hero)
 	adventureInt->onHeroChanged(hero);
 	localState->erasePath(hero);
 }
-
-void CPlayerInterface::townRemoved(const CGTownInstance* town)
-{
-	EVENT_HANDLER_CALLED_BY_CLIENT;
-
-	if(town->tempOwner == playerID)
-	{
-		localState->removeOwnedTown(town);
-		adventureInt->onTownChanged(town);
-	}
-}
-
 
 void CPlayerInterface::heroVisit(const CGHeroInstance * visitor, const CGObjectInstance * visitedObj, bool start)
 {
@@ -1435,12 +1423,6 @@ void CPlayerInterface::objectRemoved(const CGObjectInstance * obj, const PlayerC
 	{
 		const CGHeroInstance * h = static_cast<const CGHeroInstance *>(obj);
 		heroKilled(h);
-	}
-
-	if(obj->ID == Obj::TOWN && obj->tempOwner == playerID)
-	{
-		const CGTownInstance * t = static_cast<const CGTownInstance *>(obj);
-		townRemoved(t);
 	}
 	GH.fakeMouseMove();
 }

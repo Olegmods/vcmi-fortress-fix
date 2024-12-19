@@ -146,7 +146,7 @@ struct DLL_LINKAGE StartInfo : public Serializeable
 	using TPlayerInfos = std::map<PlayerColor, PlayerSettings>;
 	TPlayerInfos playerInfos; //color indexed
 
-	time_t startTime;
+	std::string startTimeIso8601;
 	std::string fileURI;
 	SimturnsInfo simturnsInfo;
 	TurnTimerInfo turnTimerInfo;
@@ -164,8 +164,8 @@ struct DLL_LINKAGE StartInfo : public Serializeable
 	// TODO: Must be client-side
 	std::string getCampaignName() const;
 
-	/// Controls hardcoded check for handling of garrisons by AI in Restoration of Erathia campaigns to match H3 behavior
-	bool isRestorationOfErathiaCampaign() const;
+	/// Controls hardcoded check for "Steadwick's Fall" scenario from "Dungeon and Devils" campaign
+	bool isSteadwickFallCampaignMission() const;
 
 	template <typename Handler>
 	void serialize(Handler &h)
@@ -180,17 +180,7 @@ struct DLL_LINKAGE StartInfo : public Serializeable
 			h & oldSeeds;
 			h & oldSeeds;
 		}
-		if (h.version < Handler::Version::FOLDER_NAME_REWORK)
-		{
-			std::string startTimeLegacy;
-			h & startTimeLegacy;
-			struct std::tm tm;
-			std::istringstream ss(startTimeLegacy);
-			ss >> std::get_time(&tm, "%Y%m%dT%H%M%S");
-			startTime = mktime(&tm);
-		}
-		else
-			h & startTime;
+		h & startTimeIso8601;
 		h & fileURI;
 		h & simturnsInfo;
 		h & turnTimerInfo;
@@ -203,7 +193,7 @@ struct DLL_LINKAGE StartInfo : public Serializeable
 	StartInfo()
 		: mode(EStartMode::INVALID)
 		, difficulty(1)
-		, startTime(std::time(nullptr))
+		, startTimeIso8601(vstd::getDateTimeISO8601Basic(std::time(nullptr)))
 	{
 
 	}

@@ -49,8 +49,6 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-const ui32 CGHeroInstance::NO_PATROLLING = std::numeric_limits<ui32>::max();
-
 void CGHeroPlaceholder::serializeJsonOptions(JsonSerializeFormat & handler)
 {
 	serializeJsonOwner(handler);
@@ -102,16 +100,16 @@ ui32 CGHeroInstance::getTileMovementCost(const TerrainTile & dest, const Terrain
 	int64_t ret = GameConstants::BASE_MOVEMENT_COST;
 
 	//if there is road both on dest and src tiles - use src road movement cost
-	if(dest.hasRoad() && from.hasRoad())
+	if(dest.roadType->getId() != Road::NO_ROAD && from.roadType->getId() != Road::NO_ROAD)
 	{
-		ret = from.getRoad()->movementCost;
+		ret = from.roadType->movementCost;
 	}
-	else if(ti->nativeTerrain != from.getTerrainID() &&//the terrain is not native
+	else if(ti->nativeTerrain != from.terType->getId() &&//the terrain is not native
 			ti->nativeTerrain != ETerrainId::ANY_TERRAIN && //no special creature bonus
-			!ti->hasBonusOfType(BonusType::NO_TERRAIN_PENALTY, BonusSubtypeID(from.getTerrainID()))) //no special movement bonus
+			!ti->hasBonusOfType(BonusType::NO_TERRAIN_PENALTY, BonusSubtypeID(from.terType->getId()))) //no special movement bonus
 	{
 
-		ret = VLC->terrainTypeHandler->getById(from.getTerrainID())->moveCost;
+		ret = VLC->terrainTypeHandler->getById(from.terType->getId())->moveCost;
 		ret -= ti->valOfBonuses(BonusType::ROUGH_TERRAIN_DISCOUNT);
 		if(ret < GameConstants::BASE_MOVEMENT_COST)
 			ret = GameConstants::BASE_MOVEMENT_COST;
@@ -336,12 +334,6 @@ void CGHeroInstance::setHeroType(HeroTypeID heroType)
 	subID = heroType;
 }
 
-void CGHeroInstance::initObj(vstd::RNG & rand)
-{
-	if (ID == Obj::HERO)
-		updateAppearance();
-}
-
 void CGHeroInstance::initHero(vstd::RNG & rand, const HeroTypeID & SUBID)
 {
 	subID = SUBID.getNum();
@@ -356,27 +348,12 @@ TObjectTypeHandler CGHeroInstance::getObjectHandler() const
 		return VLC->objtypeh->getHandlerFor(ID, 0);
 }
 
-void CGHeroInstance::updateAppearance()
-{
-	auto handler = VLC->objtypeh->getHandlerFor(Obj::HERO, getHeroClass()->getIndex());;
-	auto terrain = cb->gameState()->getTile(visitablePos())->getTerrainID();
-	auto app = handler->getOverride(terrain, this);
-	if (app)
-		appearance = app;
-}
-
 void CGHeroInstance::initHero(vstd::RNG & rand)
 {
 	assert(validTypes(true));
 	
-	if (gender == EHeroGender::DEFAULT)
-		gender = getHeroType()->gender;
-
 	if (ID == Obj::HERO)
-	{
-		auto handler = VLC->objtypeh->getHandlerFor(Obj::HERO, getHeroClass()->getIndex());;
-		appearance = handler->getTemplates().front();
-	}
+		appearance = getObjectHandler()->getTemplates().front();
 
 	if(!vstd::contains(spells, SpellID::PRESET))
 	{
@@ -414,6 +391,9 @@ void CGHeroInstance::initHero(vstd::RNG & rand)
 	}
 	if(secSkills.size() == 1 && secSkills[0] == std::pair<SecondarySkill,ui8>(SecondarySkill::NONE, -1)) //set secondary skills to default
 		secSkills = getHeroType()->secSkillsInit;
+
+	if (gender == EHeroGender::DEFAULT)
+		gender = getHeroType()->gender;
 
 	setFormation(EArmyFormation::LOOSE);
 	if (!stacksCount()) //standard army//initial army
@@ -661,10 +641,8 @@ void CGHeroInstance::pickRandomObject(vstd::RNG & rand)
 
 	if (ID == Obj::RANDOM_HERO)
 	{
-		auto selectedHero = cb->gameState()->pickNextHeroType(getOwner());
-
 		ID = Obj::HERO;
-		subID = selectedHero;
+		subID = cb->gameState()->pickNextHeroType(getOwner());
 		randomizeArmy(getHeroClass()->faction);
 	}
 
@@ -711,25 +689,7 @@ double CGHeroInstance::getFightingStrength() const
 
 double CGHeroInstance::getMagicStrength() const
 {
-	if (!hasSpellbook())
-		return 1;
-	bool atLeastOneCombatSpell = false;
-	for (auto spell : spells)
-	{
-		if (spellbookContainsSpell(spell) && spell.toSpell()->isCombat())
-		{
-			atLeastOneCombatSpell = true;
-			break;
-		}
-	}
-	if (!atLeastOneCombatSpell)
-		return 1;
-	return sqrt((1.0 + 0.05*getPrimSkillLevel(PrimarySkill::KNOWLEDGE) * mana / manaLimit()) * (1.0 + 0.05*getPrimSkillLevel(PrimarySkill::SPELL_POWER) * mana / manaLimit()));
-}
-
-double CGHeroInstance::getMagicStrengthForCampaign() const
-{
-	return sqrt((1.0 + 0.05 * getPrimSkillLevel(PrimarySkill::KNOWLEDGE)) * (1.0 + 0.05 * getPrimSkillLevel(PrimarySkill::SPELL_POWER)));
+	return sqrt((1.0 + 0.05*getPrimSkillLevel(PrimarySkill::KNOWLEDGE)) * (1.0 + 0.05*getPrimSkillLevel(PrimarySkill::SPELL_POWER)));
 }
 
 double CGHeroInstance::getHeroStrength() const
@@ -737,14 +697,9 @@ double CGHeroInstance::getHeroStrength() const
 	return sqrt(pow(getFightingStrength(), 2.0) * pow(getMagicStrength(), 2.0));
 }
 
-double CGHeroInstance::getHeroStrengthForCampaign() const
-{
-	return sqrt(pow(getFightingStrength(), 2.0) * pow(getMagicStrengthForCampaign(), 2.0));
-}
-
 ui64 CGHeroInstance::getTotalStrength() const
 {
-	double ret = getHeroStrength() * getArmyStrength();
+	double ret = getFightingStrength() * getArmyStrength();
 	return static_cast<ui64>(ret);
 }
 
@@ -1269,7 +1224,7 @@ void CGHeroInstance::removeSpellbook()
 
 	if(hasSpellbook())
 	{
-		cb->gameState()->map->removeArtifactInstance(*this, ArtifactPosition::SPELLBOOK);
+		cb->removeArtifact(ArtifactLocation(this->id, ArtifactPosition::SPELLBOOK));
 	}
 }
 
@@ -1794,20 +1749,21 @@ void CGHeroInstance::serializeJsonOptions(JsonSerializeFormat & handler)
 	CArmedInstance::serializeJsonOptions(handler);
 
 	{
-		ui32 rawPatrolRadius = NO_PATROLLING;
+		static constexpr int NO_PATROLING = -1;
+		int rawPatrolRadius = NO_PATROLING;
 
 		if(handler.saving)
 		{
-			rawPatrolRadius = patrol.patrolling ? patrol.patrolRadius : NO_PATROLLING;
+			rawPatrolRadius = patrol.patrolling ? patrol.patrolRadius : NO_PATROLING;
 		}
 
-		handler.serializeInt("patrolRadius", rawPatrolRadius, NO_PATROLLING);
+		handler.serializeInt("patrolRadius", rawPatrolRadius, NO_PATROLING);
 
 		if(!handler.saving)
 		{
-			patrol.patrolling = (rawPatrolRadius != NO_PATROLLING);
+			patrol.patrolling = (rawPatrolRadius > NO_PATROLING);
 			patrol.initialPos = visitablePos();
-			patrol.patrolRadius = patrol.patrolling ? rawPatrolRadius : 0;
+			patrol.patrolRadius = (rawPatrolRadius > NO_PATROLING) ? rawPatrolRadius : 0;
 		}
 	}
 }
@@ -1849,14 +1805,14 @@ bool CGHeroInstance::isMissionCritical() const
 
 void CGHeroInstance::fillUpgradeInfo(UpgradeInfo & info, const CStackInstance &stack) const
 {
-	TConstBonusListPtr lista = getBonuses(Selector::typeSubtype(BonusType::SPECIAL_UPGRADE, BonusSubtypeID(stack.getId())));
+	TConstBonusListPtr lista = getBonuses(Selector::typeSubtype(BonusType::SPECIAL_UPGRADE, BonusSubtypeID(stack.type->getId())));
 	for(const auto & it : *lista)
 	{
 		auto nid = CreatureID(it->additionalInfo[0]);
-		if (nid != stack.getId()) //in very specific case the upgrade is available by default (?)
+		if (nid != stack.type->getId()) //in very specific case the upgrade is available by default (?)
 		{
 			info.newID.push_back(nid);
-			info.cost.push_back(nid.toCreature()->getFullRecruitCost() - stack.getType()->getFullRecruitCost());
+			info.cost.push_back(nid.toCreature()->getFullRecruitCost() - stack.type->getFullRecruitCost());
 		}
 	}
 }
@@ -1919,12 +1875,5 @@ const IOwnableObject * CGHeroInstance::asOwnable() const
 	return this;
 }
 
-int CGHeroInstance::getBasePrimarySkillValue(PrimarySkill which) const
-{
-	std::string cachingStr = "type_PRIMARY_SKILL_base_" + std::to_string(static_cast<int>(which));
-	auto selector = Selector::typeSubtype(BonusType::PRIMARY_SKILL, BonusSubtypeID(which)).And(Selector::sourceType()(BonusSource::HERO_BASE_SKILL));
-	auto minSkillValue = VLC->engineSettings()->getVector(EGameSettings::HEROES_MINIMAL_PRIMARY_SKILLS)[which.getNum()];
-	return std::max(valOfBonuses(selector, cachingStr), minSkillValue);
-}
 
 VCMI_LIB_NAMESPACE_END

@@ -89,6 +89,7 @@ void DangerHitMapAnalyzer::updateHitMap()
 
 			heroes[hero->tempOwner][hero] = HeroRole::MAIN;
 		}
+
 		if(obj->ID == Obj::TOWN)
 		{
 			auto town = dynamic_cast<const CGTownInstance *>(obj);
@@ -139,7 +140,6 @@ void DangerHitMapAnalyzer::updateHitMap()
 
 				newThreat.hero = path.targetHero;
 				newThreat.turn = path.turn();
-				newThreat.threat = path.getHeroStrength() * (1 - path.movementCost() / 2.0);
 				newThreat.danger = path.getHeroStrength();
 
 				if(newThreat.value() > node.maximumDanger.value())
@@ -316,8 +316,8 @@ uint64_t DangerHitMapAnalyzer::enemyCanKillOurHeroesAlongThePath(const AIPath & 
 
 	const auto& info = getTileThreat(tile);
 	
-	return (info.fastestDanger.turn <= turn && !isSafeToVisit(path.targetHero, path.heroArmy, info.fastestDanger.danger, ai->settings->getSafeAttackRatio()))
-		|| (info.maximumDanger.turn <= turn && !isSafeToVisit(path.targetHero, path.heroArmy, info.maximumDanger.danger, ai->settings->getSafeAttackRatio()));
+	return (info.fastestDanger.turn <= turn && !isSafeToVisit(path.targetHero, path.heroArmy, info.fastestDanger.danger))
+		|| (info.maximumDanger.turn <= turn && !isSafeToVisit(path.targetHero, path.heroArmy, info.maximumDanger.danger));
 }
 
 const HitMapNode & DangerHitMapAnalyzer::getObjectThreat(const CGObjectInstance * obj) const
@@ -348,7 +348,6 @@ std::set<const CGObjectInstance *> DangerHitMapAnalyzer::getOneTurnAccessibleObj
 void DangerHitMapAnalyzer::reset()
 {
 	hitMapUpToDate = false;
-	tileOwnersUpToDate = false;
 }
 
 }

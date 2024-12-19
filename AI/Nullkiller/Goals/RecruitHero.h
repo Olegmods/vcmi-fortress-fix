@@ -44,7 +44,6 @@ namespace Goals
 		}
 
 		std::string toString() const override;
-		const CGHeroInstance* getHero() const override { return heroToBuy; }
 		void accept(AIGateway * ai) override;
 	};
 }

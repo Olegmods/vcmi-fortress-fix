@@ -28,7 +28,6 @@ public:
 	using CGObjectInstance::CGObjectInstance;
 
 	void onHeroVisit(const CGHeroInstance * h) const override;
-	void markAsDeleted() const;
 	void initObj(vstd::RNG & rand) override;
 
 	const IOwnableObject * asOwnable() const final;

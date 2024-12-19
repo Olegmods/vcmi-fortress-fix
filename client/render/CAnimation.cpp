@@ -18,12 +18,11 @@
 #include "../../lib/filesystem/Filesystem.h"
 #include "../../lib/json/JsonUtils.h"
 
-bool CAnimation::loadFrame(size_t frame, size_t group, bool verbose)
+bool CAnimation::loadFrame(size_t frame, size_t group)
 {
 	if(size(group) <= frame)
 	{
-		if(verbose)
-			printError(frame, group, "LoadFrame");
+		printError(frame, group, "LoadFrame");
 		return false;
 	}
 
@@ -120,7 +119,7 @@ void CAnimation::duplicateImage(const size_t sourceGroup, const size_t sourceFra
 
 std::shared_ptr<IImage> CAnimation::getImage(size_t frame, size_t group, bool verbose)
 {
-	if (!loadFrame(frame, group, verbose))
+	if (!loadFrame(frame, group))
 		return nullptr;
 	return getImageImpl(frame, group, verbose);
 }

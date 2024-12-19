@@ -26,14 +26,6 @@
 		"index": 29,
 		"level": 1,
 		"faction": "tower",
-		"shots" : 8,
-		"abilities" :
-		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			}
-		},
 		"graphics" :
 		{
 			"animation": "CGREMM.DEF",
@@ -62,10 +54,6 @@
 			"gargoyle" :
 			{
 				"type" : "GARGOYLE"
-			},
-			"canFly" :
-			{
-				"type" : "FLYING"
 			}
 		},
 		"upgrades": ["obsidianGargoyle"],
@@ -92,10 +80,6 @@
 			"gargoyle" :
 			{
 				"type" : "GARGOYLE"
-			},
-			"canFly" :
-			{
-				"type" : "FLYING"
 			}
 		},
 		"graphics" :
@@ -118,15 +102,15 @@
 		"faction": "tower",
 		"abilities":
 		{
-			"nonliving" :
-			{
-				"type" : "NON_LIVING"
-			},
 			"magicResistance" :
 			{
 				"type" : "SPELL_DAMAGE_REDUCTION",
 				"subtype" : "spellSchool.any",
 				"val" : 50
+			},
+			"nonliving" :
+			{
+				"type" : "NON_LIVING"
 			}
 		},
 		"upgrades": ["stoneGolem"],
@@ -150,15 +134,15 @@
 		"faction": "tower",
 		"abilities" :
 		{
-			"nonliving" :
-			{
-				"type" : "NON_LIVING"
-			},
 			"magicResistance" :
 			{
 				"type" : "SPELL_DAMAGE_REDUCTION",
 				"subtype" : "spellSchool.any",
 				"val" : 75
+			},
+			"nonliving" :
+			{
+				"type" : "NON_LIVING"
 			}
 		},
 		"graphics" :
@@ -179,17 +163,8 @@
 		"index": 34,
 		"level": 4,
 		"faction": "tower",
-		"shots" : 24,
 		"abilities": 
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
 			"reduceSpellCost" : 
 			{
 				"type" : "CHANGES_SPELL_COST_FOR_ALLY",
@@ -220,21 +195,8 @@
 		"index": 35,
 		"level": 4,
 		"faction": "tower",
-		"shots" : 24,
 		"abilities": 
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
-			"noWallPenalty" :
-			{
-				"type" : "NO_WALL_PENALTY"
-			},
 			"reduceSpellCost" : 
 			{
 				"type" : "CHANGES_SPELL_COST_FOR_ALLY",
@@ -274,17 +236,13 @@
 		"faction": "tower",
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"hateEfreet" : 
+			"hateAngels" : 
 			{
 				"type" : "HATE",
 				"subtype" : "creature.efreet",
 				"val" : 50
 			},
-			"hateEfreetSultans" : 
+			"hateArchAngels" : 
 			{
 				"type" : "HATE",
 				"subtype" : "creature.efreetSultan",
@@ -312,14 +270,17 @@
 		"faction": "tower",
 		"abilities":
 		{
-			"canFly" :
+			"hateAngels" : 
 			{
-				"type" : "FLYING"
+				"type" : "HATE",
+				"subtype" : "creature.efreet",
+				"val" : 50
 			},
-			"casts" :
+			"hateArchAngels" : 
 			{
-				"type" : "CASTS",
-				"val" : 3
+				"type" : "HATE",
+				"subtype" : "creature.efreetSultan",
+				"val" : 50
 			},
 			"spellsLength" : 
 			{
@@ -331,17 +292,10 @@
 				"type" : "RANDOM_SPELLCASTER",
 				"val" : 2
 			},
-			"hateEfreet" : 
+			"casts" :
 			{
-				"type" : "HATE",
-				"subtype" : "creature.efreet",
-				"val" : 50
-			},
-			"hateEfreetSultans" : 
-			{
-				"type" : "HATE",
-				"subtype" : "creature.efreetSultan",
-				"val" : 50
+				"type" : "CASTS",
+				"val" : 3
 			}
 		},
 		"graphics" :
@@ -363,7 +317,6 @@
 		"index": 38,
 		"level": 6,
 		"faction": "tower",
-		"doubleWide" : true,
 		"abilities" :
 		{
 			"noRetaliation" : 
@@ -390,7 +343,6 @@
 		"index": 39,
 		"level": 6,
 		"faction": "tower",
-		"doubleWide" : true,
 		"abilities" :
 		{
 			"noRetaliation" : 
@@ -421,11 +373,6 @@
 			"immuneToMind" : 
 			{
 				"type" : "MIND_IMMUNITY"
-			},
-			"KING_3" : // Will be affected by Expert Slayer only
-			{
-				"type" : "KING",
-				"val" : 3
 			}
 		},
 		"upgrades": ["titan"],
@@ -447,27 +394,13 @@
 		"index": 41,
 		"level": 7,
 		"faction": "tower",
-		"shots" : 24,
 		"abilities" :
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
 			"immuneToMind" : 
 			{
 				"type" : "MIND_IMMUNITY"
 			},
-			"KING_3" : // Will be affected by Expert Slayer only
-			{
-				"type" : "KING",
-				"val" : 3
-			},
-			"hateBlackDragons" : 
+			"hateArchAngels" : 
 			{
 				"type" : "HATE",
 				"subtype" : "creature.blackDragon",

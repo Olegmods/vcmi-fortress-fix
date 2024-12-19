@@ -48,7 +48,7 @@ void VictoryConditions::initialize(MapController & c)
 
 	for(auto & s : conditionStringsWin)
 	{
-		ui->victoryComboBox->addItem(tr(s.c_str()));
+		ui->victoryComboBox->addItem(QString::fromStdString(s));
 	}
 	ui->standardVictoryCheck->setChecked(false);
 	ui->onlyForHumansCheck->setChecked(false);

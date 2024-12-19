@@ -83,18 +83,16 @@ void InputSourceTouch::handleEventFingerMotion(const SDL_TouchFingerEvent & tfin
 			break;
 		}
 		case TouchState::TAP_DOWN_SHORT:
-		case TouchState::TAP_DOWN_LONG_AWAIT:
 		{
 			Point distance = convertTouchToMouse(tfinger) - lastTapPosition;
 			if ( std::abs(distance.x) > params.panningSensitivityThreshold || std::abs(distance.y) > params.panningSensitivityThreshold)
 			{
-				state = state == TouchState::TAP_DOWN_SHORT ? TouchState::TAP_DOWN_PANNING : TouchState::TAP_DOWN_PANNING_POPUP;
+				state = TouchState::TAP_DOWN_PANNING;
 				GH.events().dispatchGesturePanningStarted(lastTapPosition);
 			}
 			break;
 		}
 		case TouchState::TAP_DOWN_PANNING:
-		case TouchState::TAP_DOWN_PANNING_POPUP:
 		{
 			emitPanningEvent(tfinger);
 			break;
@@ -105,6 +103,7 @@ void InputSourceTouch::handleEventFingerMotion(const SDL_TouchFingerEvent & tfin
 			break;
 		}
 		case TouchState::TAP_DOWN_LONG:
+		case TouchState::TAP_DOWN_LONG_AWAIT:
 		{
 			// no-op
 			break;
@@ -158,11 +157,8 @@ void InputSourceTouch::handleEventFingerDown(const SDL_TouchFingerEvent & tfinge
 			CSH->getGlobalLobby().activateInterface();
 			break;
 		}
-		case TouchState::TAP_DOWN_LONG_AWAIT:
-			lastTapPosition = convertTouchToMouse(tfinger);
-			break;
 		case TouchState::TAP_DOWN_LONG:
-		case TouchState::TAP_DOWN_PANNING_POPUP:
+		case TouchState::TAP_DOWN_LONG_AWAIT:
 		{
 			// no-op
 			break;
@@ -209,10 +205,9 @@ void InputSourceTouch::handleEventFingerUp(const SDL_TouchFingerEvent & tfinger)
 			break;
 		}
 		case TouchState::TAP_DOWN_PANNING:
-		case TouchState::TAP_DOWN_PANNING_POPUP:
 		{
 			GH.events().dispatchGesturePanningEnded(lastTapPosition, convertTouchToMouse(tfinger));
-			state = state == TouchState::TAP_DOWN_PANNING ? TouchState::IDLE : TouchState::TAP_DOWN_LONG_AWAIT;
+			state = TouchState::IDLE;
 			break;
 		}
 		case TouchState::TAP_DOWN_DOUBLE:

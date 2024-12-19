@@ -236,7 +236,7 @@ DLL_LINKAGE CArtifactInstance * ArtifactUtils::createArtifact(const ArtifactID &
 		assert(art);
 
 		auto * artInst = new CArtifactInstance(art);
-		if(art->isCombined() && !art->isFused())
+		if(art->isCombined())
 		{
 			for(const auto & part : art->getConstituents())
 				artInst->addPart(createArtInst(part), ArtifactPosition::PRE_FIRST);

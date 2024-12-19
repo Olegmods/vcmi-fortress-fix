@@ -19,8 +19,6 @@
 #include "../render/CDefFile.h"
 #include "../render/Graphics.h"
 #include "../xBRZ/xbrz.h"
-#include "../gui/CGuiHandler.h"
-#include "../render/IScreenHandler.h"
 
 #include <tbb/parallel_for.h>
 #include <SDL_surface.h>
@@ -91,12 +89,11 @@ int IImage::height() const
 	return dimensions().y;
 }
 
-SDLImageShared::SDLImageShared(const CDefFile * data, size_t frame, size_t group, int preScaleFactor)
+SDLImageShared::SDLImageShared(const CDefFile * data, size_t frame, size_t group)
 	: surf(nullptr),
 	margins(0, 0),
 	fullSize(0, 0),
-	originalPalette(nullptr),
-	preScaleFactor(preScaleFactor)
+	originalPalette(nullptr)
 {
 	SDLImageLoader loader(this);
 	data->loadFrame(frame, group, loader);
@@ -104,12 +101,11 @@ SDLImageShared::SDLImageShared(const CDefFile * data, size_t frame, size_t group
 	savePalette();
 }
 
-SDLImageShared::SDLImageShared(SDL_Surface * from, int preScaleFactor)
+SDLImageShared::SDLImageShared(SDL_Surface * from)
 	: surf(nullptr),
 	margins(0, 0),
 	fullSize(0, 0),
-	originalPalette(nullptr),
-	preScaleFactor(preScaleFactor)
+	originalPalette(nullptr)
 {
 	surf = from;
 	if (surf == nullptr)
@@ -122,12 +118,11 @@ SDLImageShared::SDLImageShared(SDL_Surface * from, int preScaleFactor)
 	fullSize.y = surf->h;
 }
 
-SDLImageShared::SDLImageShared(const ImagePath & filename, int preScaleFactor)
+SDLImageShared::SDLImageShared(const ImagePath & filename)
 	: surf(nullptr),
 	margins(0, 0),
 	fullSize(0, 0),
-	originalPalette(nullptr),
-	preScaleFactor(preScaleFactor)
+	originalPalette(nullptr)
 {
 	surf = BitmapHandler::loadBitmap(filename);
 
@@ -141,8 +136,6 @@ SDLImageShared::SDLImageShared(const ImagePath & filename, int preScaleFactor)
 		savePalette();
 		fullSize.x = surf->w;
 		fullSize.y = surf->h;
-
-		optimizeSurface();
 	}
 }
 
@@ -184,7 +177,7 @@ void SDLImageShared::draw(SDL_Surface * where, SDL_Palette * palette, const Poin
 	if (palette && surf->format->palette)
 		SDL_SetSurfacePalette(surf, palette);
 
-	if(surf->format->palette && mode != EImageBlitMode::OPAQUE && mode != EImageBlitMode::COLORKEY)
+	if(surf->format->palette && mode == EImageBlitMode::ALPHA)
 	{
 		CSDL_Ext::blit8bppAlphaTo24bpp(surf, sourceRect, where, destShift, alpha);
 	}
@@ -265,53 +258,25 @@ void SDLImageShared::optimizeSurface()
 		SDL_SetSurfaceBlendMode(surf, SDL_BLENDMODE_NONE);
 		SDL_BlitSurface(surf, &rectSDL, newSurface, nullptr);
 
-		if (SDL_HasColorKey(surf))
-		{
-			uint32_t colorKey;
-			SDL_GetColorKey(surf, &colorKey);
-			SDL_SetColorKey(newSurface, SDL_TRUE, colorKey);
-		}
-
 		SDL_FreeSurface(surf);
 		surf = newSurface;
 
 		margins.x += left;
 		margins.y += top;
 	}
-
-	if(preScaleFactor > 1 && preScaleFactor != GH.screenHandler().getScalingFactor())
-	{
-		margins.x = margins.x * GH.screenHandler().getScalingFactor() / preScaleFactor;
-		margins.y = margins.y * GH.screenHandler().getScalingFactor() / preScaleFactor;
-	}
 }
 
-std::shared_ptr<const ISharedImage> SDLImageShared::scaleInteger(int factor, SDL_Palette * palette, EImageBlitMode mode) const
+std::shared_ptr<ISharedImage> SDLImageShared::scaleInteger(int factor, SDL_Palette * palette) const
 {
 	if (factor <= 0)
 		throw std::runtime_error("Unable to scale by integer value of " + std::to_string(factor));
 
-	if (!surf)
-		return shared_from_this();
-
-	if (palette && surf->format->palette)
+	if (palette && surf && surf->format->palette)
 		SDL_SetSurfacePalette(surf, palette);
 
-	SDL_Surface * scaled = nullptr;
-	if(preScaleFactor == factor)
-		return shared_from_this();
-	else if(preScaleFactor == 1)
-	{
-		// dump heuristics to differentiate tileable UI elements from map object / combat assets
-		if (mode == EImageBlitMode::OPAQUE || mode == EImageBlitMode::COLORKEY || mode == EImageBlitMode::SIMPLE)
-			scaled = CSDL_Ext::scaleSurfaceIntegerFactor(surf, factor, EScalingAlgorithm::XBRZ_OPAQUE);
-		else
-			scaled = CSDL_Ext::scaleSurfaceIntegerFactor(surf, factor, EScalingAlgorithm::XBRZ_ALPHA);
-	}
-	else
-		scaled = CSDL_Ext::scaleSurface(surf, (surf->w / preScaleFactor) * factor, (surf->h / preScaleFactor) * factor);
+	SDL_Surface * scaled = CSDL_Ext::scaleSurfaceIntegerFactor(surf, factor, EScalingAlgorithm::XBRZ);
 
-	auto ret = std::make_shared<SDLImageShared>(scaled, preScaleFactor);
+	auto ret = std::make_shared<SDLImageShared>(scaled);
 
 	ret->fullSize.x = fullSize.x * factor;
 	ret->fullSize.y = fullSize.y * factor;
@@ -323,16 +288,16 @@ std::shared_ptr<const ISharedImage> SDLImageShared::scaleInteger(int factor, SDL
 	// erase our own reference
 	SDL_FreeSurface(scaled);
 
-	if (surf->format->palette)
+	if (surf && surf->format->palette)
 		SDL_SetSurfacePalette(surf, originalPalette);
 
 	return ret;
 }
 
-std::shared_ptr<const ISharedImage> SDLImageShared::scaleTo(const Point & size, SDL_Palette * palette) const
+std::shared_ptr<ISharedImage> SDLImageShared::scaleTo(const Point & size, SDL_Palette * palette) const
 {
-	float scaleX = static_cast<float>(size.x) / fullSize.x;
-	float scaleY = static_cast<float>(size.y) / fullSize.y;
+	float scaleX = float(size.x) / dimensions().x;
+	float scaleY = float(size.y) / dimensions().y;
 
 	if (palette && surf->format->palette)
 		SDL_SetSurfacePalette(surf, palette);
@@ -346,7 +311,7 @@ std::shared_ptr<const ISharedImage> SDLImageShared::scaleTo(const Point & size, 
 	else
 		CSDL_Ext::setDefaultColorKey(scaled);//just in case
 
-	auto ret = std::make_shared<SDLImageShared>(scaled, preScaleFactor);
+	auto ret = std::make_shared<SDLImageShared>(scaled);
 
 	ret->fullSize.x = (int) round((float)fullSize.x * scaleX);
 	ret->fullSize.y = (int) round((float)fullSize.y * scaleY);
@@ -383,17 +348,17 @@ void SDLImageIndexed::playerColored(PlayerColor player)
 bool SDLImageShared::isTransparent(const Point & coords) const
 {
 	if (surf)
-		return CSDL_Ext::isTransparent(surf, coords.x - margins.x, coords.y	- margins.y);
+		return CSDL_Ext::isTransparent(surf, coords.x, coords.y);
 	else
 		return true;
 }
 
 Point SDLImageShared::dimensions() const
 {
-	return fullSize / preScaleFactor;
+	return fullSize;
 }
 
-std::shared_ptr<IImage> SDLImageShared::createImageReference(EImageBlitMode mode) const
+std::shared_ptr<IImage> SDLImageShared::createImageReference(EImageBlitMode mode)
 {
 	if (surf && surf->format->palette)
 		return std::make_shared<SDLImageIndexed>(shared_from_this(), originalPalette, mode);
@@ -401,10 +366,10 @@ std::shared_ptr<IImage> SDLImageShared::createImageReference(EImageBlitMode mode
 		return std::make_shared<SDLImageRGB>(shared_from_this(), mode);
 }
 
-std::shared_ptr<const ISharedImage> SDLImageShared::horizontalFlip() const
+std::shared_ptr<ISharedImage> SDLImageShared::horizontalFlip() const
 {
 	SDL_Surface * flipped = CSDL_Ext::horizontalFlip(surf);
-	auto ret = std::make_shared<SDLImageShared>(flipped, preScaleFactor);
+	auto ret = std::make_shared<SDLImageShared>(flipped);
 	ret->fullSize = fullSize;
 	ret->margins.x = margins.x;
 	ret->margins.y = fullSize.y - surf->h - margins.y;
@@ -413,10 +378,10 @@ std::shared_ptr<const ISharedImage> SDLImageShared::horizontalFlip() const
 	return ret;
 }
 
-std::shared_ptr<const ISharedImage> SDLImageShared::verticalFlip() const
+std::shared_ptr<ISharedImage> SDLImageShared::verticalFlip() const
 {
 	SDL_Surface * flipped = CSDL_Ext::verticalFlip(surf);
-	auto ret = std::make_shared<SDLImageShared>(flipped, preScaleFactor);
+	auto ret = std::make_shared<SDLImageShared>(flipped);
 	ret->fullSize = fullSize;
 	ret->margins.x = fullSize.x - surf->w - margins.x;
 	ret->margins.y = margins.y;
@@ -451,7 +416,7 @@ void SDLImageIndexed::shiftPalette(uint32_t firstColorID, uint32_t colorsToMove,
 void SDLImageIndexed::adjustPalette(const ColorFilter & shifter, uint32_t colorsToSkipMask)
 {
 	// If shadow is enabled, following colors must be skipped unconditionally
-	if (blitMode == EImageBlitMode::WITH_SHADOW || blitMode == EImageBlitMode::WITH_SHADOW_AND_OVERLAY)
+	if (shadowEnabled)
 		colorsToSkipMask |= (1 << 0) + (1 << 1) + (1 << 4);
 
 	// Note: here we skip first colors in the palette that are predefined in H3 images
@@ -467,14 +432,19 @@ void SDLImageIndexed::adjustPalette(const ColorFilter & shifter, uint32_t colors
 	}
 }
 
-SDLImageIndexed::SDLImageIndexed(const std::shared_ptr<const ISharedImage> & image, SDL_Palette * originalPalette, EImageBlitMode mode)
+SDLImageIndexed::SDLImageIndexed(const std::shared_ptr<ISharedImage> & image, SDL_Palette * originalPalette, EImageBlitMode mode)
 	:SDLImageBase::SDLImageBase(image, mode)
 	,originalPalette(originalPalette)
 {
+
 	currentPalette = SDL_AllocPalette(originalPalette->ncolors);
 	SDL_SetPaletteColors(currentPalette, originalPalette->colors, 0, originalPalette->ncolors);
 
-	preparePalette();
+	if (mode == EImageBlitMode::ALPHA)
+	{
+		setOverlayColor(Colors::TRANSPARENCY);
+		setShadowTransparency(1.0);
+	}
 }
 
 SDLImageIndexed::~SDLImageIndexed()
@@ -521,42 +491,36 @@ void SDLImageIndexed::setOverlayColor(const ColorRGBA & color)
 	}
 }
 
-void SDLImageIndexed::preparePalette()
+void SDLImageIndexed::setShadowEnabled(bool on)
 {
-	switch(blitMode)
-	{
-		case EImageBlitMode::ONLY_SHADOW:
-		case EImageBlitMode::ONLY_OVERLAY:
-			adjustPalette(ColorFilter::genAlphaShifter(0), 0);
-			break;
-	}
+	if (on)
+		setShadowTransparency(1.0);
 
-	switch(blitMode)
-	{
-		case EImageBlitMode::SIMPLE:
-		case EImageBlitMode::WITH_SHADOW:
-		case EImageBlitMode::ONLY_SHADOW:
-		case EImageBlitMode::WITH_SHADOW_AND_OVERLAY:
-			setShadowTransparency(1.0);
-			break;
-		case EImageBlitMode::ONLY_BODY:
-		case EImageBlitMode::ONLY_BODY_IGNORE_OVERLAY:
-		case EImageBlitMode::ONLY_OVERLAY:
-			setShadowTransparency(0.0);
-			break;
-	}
+	if (!on && blitMode == EImageBlitMode::ALPHA)
+		setShadowTransparency(0.0);
 
-	switch(blitMode)
-	{
-		case EImageBlitMode::ONLY_OVERLAY:
-		case EImageBlitMode::WITH_SHADOW_AND_OVERLAY:
-			setOverlayColor(Colors::WHITE_TRUE);
-			break;
-		case EImageBlitMode::ONLY_SHADOW:
-		case EImageBlitMode::ONLY_BODY:
-			setOverlayColor(Colors::TRANSPARENCY);
-			break;
-	}
+	shadowEnabled = on;
+}
+
+void SDLImageIndexed::setBodyEnabled(bool on)
+{
+	if (on)
+		adjustPalette(ColorFilter::genEmptyShifter(), 0);
+	else
+		adjustPalette(ColorFilter::genAlphaShifter(0), 0);
+
+	bodyEnabled = on;
+}
+
+void SDLImageIndexed::setOverlayEnabled(bool on)
+{
+	if (on)
+		setOverlayColor(Colors::WHITE_TRUE);
+
+	if (!on && blitMode == EImageBlitMode::ALPHA)
+		setOverlayColor(Colors::TRANSPARENCY);
+
+	overlayEnabled = on;
 }
 
 SDLImageShared::~SDLImageShared()
@@ -565,13 +529,13 @@ SDLImageShared::~SDLImageShared()
 	SDL_FreePalette(originalPalette);
 }
 
-SDLImageBase::SDLImageBase(const std::shared_ptr<const ISharedImage> & image, EImageBlitMode mode)
+SDLImageBase::SDLImageBase(const std::shared_ptr<ISharedImage> & image, EImageBlitMode mode)
 	:image(image)
 	, alphaValue(SDL_ALPHA_OPAQUE)
 	, blitMode(mode)
 {}
 
-std::shared_ptr<const ISharedImage> SDLImageBase::getSharedImage() const
+std::shared_ptr<ISharedImage> SDLImageBase::getSharedImage() const
 {
 	return image;
 }
@@ -603,12 +567,12 @@ void SDLImageRGB::scaleTo(const Point & size)
 
 void SDLImageIndexed::scaleInteger(int factor)
 {
-	image = image->scaleInteger(factor, currentPalette, blitMode);
+	image = image->scaleInteger(factor, currentPalette);
 }
 
 void SDLImageRGB::scaleInteger(int factor)
 {
-	image = image->scaleInteger(factor, nullptr, blitMode);
+	image = image->scaleInteger(factor, nullptr);
 }
 
 void SDLImageRGB::exportBitmap(const boost::filesystem::path & path) const
@@ -634,6 +598,21 @@ void SDLImageBase::setAlpha(uint8_t value)
 void SDLImageBase::setBlitMode(EImageBlitMode mode)
 {
 	blitMode = mode;
+}
+
+void SDLImageRGB::setShadowEnabled(bool on)
+{
+	// Not supported. Theoretically we can try to extract all pixels of specific colors, but better to use 8-bit images or composite images
+}
+
+void SDLImageRGB::setBodyEnabled(bool on)
+{
+	// Not supported. Theoretically we can try to extract all pixels of specific colors, but better to use 8-bit images or composite images
+}
+
+void SDLImageRGB::setOverlayEnabled(bool on)
+{
+	// Not supported. Theoretically we can try to extract all pixels of specific colors, but better to use 8-bit images or composite images
 }
 
 void SDLImageRGB::setOverlayColor(const ColorRGBA & color)

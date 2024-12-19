@@ -121,23 +121,13 @@ void MapTileStorage::load(size_t index, const AnimationPath & filename, EImageBl
 		terrainAnimations[3]->horizontalFlip();
 }
 
-std::shared_ptr<IImage> MapTileStorage::find(size_t fileIndex, size_t rotationIndex, size_t imageIndex, size_t groupIndex)
+std::shared_ptr<IImage> MapTileStorage::find(size_t fileIndex, size_t rotationIndex, size_t imageIndex)
 {
 	const auto & animation = animations[fileIndex][rotationIndex];
 	if (animation)
-		return animation->getImage(imageIndex, groupIndex);
+		return animation->getImage(imageIndex);
 	else
 		return nullptr;
-}
-
-int MapTileStorage::groupCount(size_t fileIndex, size_t rotationIndex, size_t imageIndex)
-{
-	const auto & animation = animations[fileIndex][rotationIndex];
-	if (animation)
-		for(int i = 0;; i++)
-			if(!animation->getImage(imageIndex, i, false))
-				return i;
-	return 1;
 }
 
 MapRendererTerrain::MapRendererTerrain()
@@ -145,7 +135,7 @@ MapRendererTerrain::MapRendererTerrain()
 {
 	logGlobal->debug("Loading map terrains");
 	for(const auto & terrain : VLC->terrainTypeHandler->objects)
-		storage.load(terrain->getIndex(), AnimationPath::builtin(terrain->tilesFilename.getName() + (terrain->paletteAnimation.size() ? "_Shifted": "")), EImageBlitMode::OPAQUE);
+		storage.load(terrain->getIndex(), terrain->tilesFilename, EImageBlitMode::OPAQUE);
 	logGlobal->debug("Done loading map terrains");
 }
 
@@ -153,19 +143,21 @@ void MapRendererTerrain::renderTile(IMapRendererContext & context, Canvas & targ
 {
 	const TerrainTile & mapTile = context.getMapTile(coordinates);
 
-	int32_t terrainIndex = mapTile.getTerrainID();
+	int32_t terrainIndex = mapTile.terType->getIndex();
 	int32_t imageIndex = mapTile.terView;
 	int32_t rotationIndex = mapTile.extTileFlags % 4;
 
-	int groupCount = storage.groupCount(terrainIndex, rotationIndex, imageIndex);
-	const auto & image = storage.find(terrainIndex, rotationIndex, imageIndex, groupCount > 1 ? context.terrainImageIndex(groupCount) : 0);
+	const auto & image = storage.find(terrainIndex, rotationIndex, imageIndex);
 
 	assert(image);
 	if (!image)
 	{
-		logGlobal->error("Failed to find image %d for terrain %s on tile %s", imageIndex, mapTile.getTerrain()->getNameTranslated(), coordinates.toString());
+		logGlobal->error("Failed to find image %d for terrain %s on tile %s", imageIndex, mapTile.terType->getNameTranslated(), coordinates.toString());
 		return;
 	}
+
+	for( auto const & element : mapTile.terType->paletteAnimation)
+		image->shiftPalette(element.start, element.length, context.terrainImageIndex(element.length));
 
 	target.draw(image, Point(0, 0));
 }
@@ -174,7 +166,7 @@ uint8_t MapRendererTerrain::checksum(IMapRendererContext & context, const int3 &
 {
 	const TerrainTile & mapTile = context.getMapTile(coordinates);
 
-	if(!mapTile.getTerrain()->paletteAnimation.empty())
+	if(!mapTile.terType->paletteAnimation.empty())
 		return context.terrainImageIndex(250);
 	return 0xff - 1;
 }
@@ -184,7 +176,7 @@ MapRendererRiver::MapRendererRiver()
 {
 	logGlobal->debug("Loading map rivers");
 	for(const auto & river : VLC->riverTypeHandler->objects)
-		storage.load(river->getIndex(), AnimationPath::builtin(river->tilesFilename.getName() + (river->paletteAnimation.size() ? "_Shifted": "")), EImageBlitMode::COLORKEY);
+		storage.load(river->getIndex(), river->tilesFilename, EImageBlitMode::COLORKEY);
 	logGlobal->debug("Done loading map rivers");
 }
 
@@ -192,15 +184,17 @@ void MapRendererRiver::renderTile(IMapRendererContext & context, Canvas & target
 {
 	const TerrainTile & mapTile = context.getMapTile(coordinates);
 
-	if(!mapTile.hasRiver())
+	if(mapTile.riverType->getId() == River::NO_RIVER)
 		return;
 
-	int32_t terrainIndex = mapTile.getRiverID();
+	int32_t terrainIndex = mapTile.riverType->getIndex();
 	int32_t imageIndex = mapTile.riverDir;
 	int32_t rotationIndex = (mapTile.extTileFlags >> 2) % 4;
 
-	int groupCount = storage.groupCount(terrainIndex, rotationIndex, imageIndex);
-	const auto & image = storage.find(terrainIndex, rotationIndex, imageIndex, groupCount > 1 ? context.terrainImageIndex(groupCount) : 0);
+	const auto & image = storage.find(terrainIndex, rotationIndex, imageIndex);
+
+	for( auto const & element : mapTile.riverType->paletteAnimation)
+		image->shiftPalette(element.start, element.length, context.terrainImageIndex(element.length));
 
 	target.draw(image, Point(0, 0));
 }
@@ -209,7 +203,7 @@ uint8_t MapRendererRiver::checksum(IMapRendererContext & context, const int3 & c
 {
 	const TerrainTile & mapTile = context.getMapTile(coordinates);
 
-	if(!mapTile.getRiver()->paletteAnimation.empty())
+	if(!mapTile.riverType->paletteAnimation.empty())
 		return context.terrainImageIndex(250);
 	return 0xff-1;
 }
@@ -230,9 +224,9 @@ void MapRendererRoad::renderTile(IMapRendererContext & context, Canvas & target,
 	if(context.isInMap(coordinatesAbove))
 	{
 		const TerrainTile & mapTileAbove = context.getMapTile(coordinatesAbove);
-		if(mapTileAbove.hasRoad())
+		if(mapTileAbove.roadType->getId() != Road::NO_ROAD)
 		{
-			int32_t terrainIndex = mapTileAbove.getRoadID();
+			int32_t terrainIndex = mapTileAbove.roadType->getIndex();
 			int32_t imageIndex = mapTileAbove.roadDir;
 			int32_t rotationIndex = (mapTileAbove.extTileFlags >> 4) % 4;
 
@@ -242,9 +236,9 @@ void MapRendererRoad::renderTile(IMapRendererContext & context, Canvas & target,
 	}
 
 	const TerrainTile & mapTile = context.getMapTile(coordinates);
-	if(mapTile.hasRoad())
+	if(mapTile.roadType->getId() != Road::NO_ROAD)
 	{
-		int32_t terrainIndex = mapTile.getRoadID();
+		int32_t terrainIndex = mapTile.roadType->getIndex();
 		int32_t imageIndex = mapTile.roadDir;
 		int32_t rotationIndex = (mapTile.extTileFlags >> 4) % 4;
 
@@ -322,7 +316,7 @@ uint8_t MapRendererBorder::checksum(IMapRendererContext & context, const int3 & 
 MapRendererFow::MapRendererFow()
 {
 	fogOfWarFullHide = GH.renderHandler().loadAnimation(AnimationPath::builtin("TSHRC"), EImageBlitMode::OPAQUE);
-	fogOfWarPartialHide = GH.renderHandler().loadAnimation(AnimationPath::builtin("TSHRE"), EImageBlitMode::SIMPLE);
+	fogOfWarPartialHide = GH.renderHandler().loadAnimation(AnimationPath::builtin("TSHRE"), EImageBlitMode::ALPHA);
 
 	static const std::vector<int> rotations = {22, 15, 2, 13, 12, 16, 28, 17, 20, 19, 7, 24, 26, 25, 30, 32, 27};
 
@@ -389,25 +383,24 @@ std::shared_ptr<CAnimation> MapRendererObjects::getBaseAnimation(const CGObjectI
 	}
 
 	bool generateMovementGroups = (info->id == Obj::BOAT) || (info->id == Obj::HERO);
-	bool enableOverlay = obj->ID != Obj::BOAT && obj->ID != Obj::HERO && obj->getOwner() != PlayerColor::UNFLAGGABLE;
 
 	// Boat appearance files only contain single, unanimated image
 	// proper boat animations are actually in different file
 	if (info->id == Obj::BOAT)
 		if(auto boat = dynamic_cast<const CGBoat*>(obj); boat && !boat->actualAnimation.empty())
-			return getAnimation(boat->actualAnimation, generateMovementGroups, enableOverlay);
+			return getAnimation(boat->actualAnimation, generateMovementGroups);
 
-	return getAnimation(info->animationFile, generateMovementGroups, enableOverlay);
+	return getAnimation(info->animationFile, generateMovementGroups);
 }
 
-std::shared_ptr<CAnimation> MapRendererObjects::getAnimation(const AnimationPath & filename, bool generateMovementGroups, bool enableOverlay)
+std::shared_ptr<CAnimation> MapRendererObjects::getAnimation(const AnimationPath & filename, bool generateMovementGroups)
 {
 	auto it = animations.find(filename);
 
 	if(it != animations.end())
 		return it->second;
 
-	auto ret = GH.renderHandler().loadAnimation(filename, enableOverlay ? EImageBlitMode::WITH_SHADOW_AND_OVERLAY : EImageBlitMode::WITH_SHADOW);
+	auto ret = GH.renderHandler().loadAnimation(filename, EImageBlitMode::ALPHA);
 	animations[filename] = ret;
 
 	if(generateMovementGroups)
@@ -434,14 +427,14 @@ std::shared_ptr<CAnimation> MapRendererObjects::getFlagAnimation(const CGObjectI
 	{
 		assert(dynamic_cast<const CGHeroInstance *>(obj) != nullptr);
 		assert(obj->tempOwner.isValidPlayer());
-		return getAnimation(AnimationPath::builtin(heroFlags[obj->tempOwner.getNum()]), true, false);
+		return getAnimation(AnimationPath::builtin(heroFlags[obj->tempOwner.getNum()]), true);
 	}
 
 	if(obj->ID == Obj::BOAT)
 	{
 		const auto * boat = dynamic_cast<const CGBoat *>(obj);
 		if(boat && boat->hero && !boat->flagAnimations[boat->hero->tempOwner.getNum()].empty())
-			return getAnimation(boat->flagAnimations[boat->hero->tempOwner.getNum()], true, false);
+			return getAnimation(boat->flagAnimations[boat->hero->tempOwner.getNum()], true);
 	}
 
 	return nullptr;
@@ -454,7 +447,7 @@ std::shared_ptr<CAnimation> MapRendererObjects::getOverlayAnimation(const CGObje
 		// Boats have additional animation with waves around boat
 		const auto * boat = dynamic_cast<const CGBoat *>(obj);
 		if(boat && boat->hero && !boat->overlayAnimation.empty())
-			return getAnimation(boat->overlayAnimation, true, false);
+			return getAnimation(boat->overlayAnimation, true);
 	}
 	return nullptr;
 }
@@ -485,13 +478,21 @@ void MapRendererObjects::renderImage(IMapRendererContext & context, Canvas & tar
 		return;
 
 	image->setAlpha(transparency);
-	if (object->ID != Obj::HERO) // heroes use separate image with flag instead of player-colored palette
+	image->setShadowEnabled(true);
+	if (object->ID != Obj::HERO)
 	{
+		image->setOverlayEnabled(object->getOwner().isValidPlayer() || object->getOwner() == PlayerColor::NEUTRAL);
+
 		if (object->getOwner().isValidPlayer())
 			image->setOverlayColor(graphics->playerColors[object->getOwner().getNum()]);
 
 		if (object->getOwner() == PlayerColor::NEUTRAL)
 			image->setOverlayColor(graphics->neutralColor);
+	}
+	else
+	{
+		// heroes use separate image with flag instead of player-colored palette
+		image->setOverlayEnabled(false);
 	}
 
 	Point offsetPixels = context.objectImageOffset(object->id, coordinates);
@@ -566,10 +567,10 @@ uint8_t MapRendererObjects::checksum(IMapRendererContext & context, const int3 &
 }
 
 MapRendererOverlay::MapRendererOverlay()
-	: imageGrid(GH.renderHandler().loadImage(ImagePath::builtin("debug/grid"), EImageBlitMode::COLORKEY))
-	, imageBlocked(GH.renderHandler().loadImage(ImagePath::builtin("debug/blocked"), EImageBlitMode::COLORKEY))
-	, imageVisitable(GH.renderHandler().loadImage(ImagePath::builtin("debug/visitable"), EImageBlitMode::COLORKEY))
-	, imageSpellRange(GH.renderHandler().loadImage(ImagePath::builtin("debug/spellRange"), EImageBlitMode::COLORKEY))
+	: imageGrid(GH.renderHandler().loadImage(ImagePath::builtin("debug/grid"), EImageBlitMode::ALPHA))
+	, imageBlocked(GH.renderHandler().loadImage(ImagePath::builtin("debug/blocked"), EImageBlitMode::ALPHA))
+	, imageVisitable(GH.renderHandler().loadImage(ImagePath::builtin("debug/visitable"), EImageBlitMode::ALPHA))
+	, imageSpellRange(GH.renderHandler().loadImage(ImagePath::builtin("debug/spellRange"), EImageBlitMode::ALPHA))
 {
 
 }
@@ -625,7 +626,7 @@ uint8_t MapRendererOverlay::checksum(IMapRendererContext & context, const int3 &
 }
 
 MapRendererPath::MapRendererPath()
-	: pathNodes(GH.renderHandler().loadAnimation(AnimationPath::builtin("ADAG"), EImageBlitMode::SIMPLE))
+	: pathNodes(GH.renderHandler().loadAnimation(AnimationPath::builtin("ADAG"), EImageBlitMode::ALPHA))
 {
 }
 

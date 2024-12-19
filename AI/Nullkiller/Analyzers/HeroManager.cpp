@@ -95,7 +95,7 @@ float HeroManager::evaluateSpeciality(const CGHeroInstance * hero) const
 
 float HeroManager::evaluateFightingStrength(const CGHeroInstance * hero) const
 {
-	return evaluateSpeciality(hero) + wariorSkillsScores.evaluateSecSkills(hero) + hero->getBasePrimarySkillValue(PrimarySkill::ATTACK) + hero->getBasePrimarySkillValue(PrimarySkill::DEFENSE) + hero->getBasePrimarySkillValue(PrimarySkill::SPELL_POWER) + hero->getBasePrimarySkillValue(PrimarySkill::KNOWLEDGE);
+	return evaluateSpeciality(hero) + wariorSkillsScores.evaluateSecSkills(hero) + hero->level * 1.5f;
 }
 
 void HeroManager::update()
@@ -108,7 +108,7 @@ void HeroManager::update()
 	for(auto & hero : myHeroes)
 	{
 		scores[hero] = evaluateFightingStrength(hero);
-		knownFightingStrength[hero->id] = hero->getHeroStrength();
+		knownFightingStrength[hero->id] = hero->getFightingStrength();
 	}
 
 	auto scoreSort = [&](const CGHeroInstance * h1, const CGHeroInstance * h2) -> bool
@@ -147,10 +147,7 @@ void HeroManager::update()
 
 HeroRole HeroManager::getHeroRole(const HeroPtr & hero) const
 {
-	if (heroRoles.find(hero) != heroRoles.end())
-		return heroRoles.at(hero);
-	else
-		return HeroRole::SCOUT;
+	return heroRoles.at(hero);
 }
 
 const std::map<HeroPtr, HeroRole> & HeroManager::getHeroRoles() const
@@ -191,11 +188,13 @@ float HeroManager::evaluateHero(const CGHeroInstance * hero) const
 	return evaluateFightingStrength(hero);
 }
 
-bool HeroManager::heroCapReached(bool includeGarrisoned) const
+bool HeroManager::heroCapReached() const
 {
-	int heroCount = cb->getHeroCount(ai->playerID, includeGarrisoned);
+	const bool includeGarnisoned = true;
+	int heroCount = cb->getHeroCount(ai->playerID, includeGarnisoned);
 
-	return heroCount >= ai->settings->getMaxRoamingHeroes()
+	return heroCount >= ALLOWED_ROAMING_HEROES
+		|| heroCount >= ai->settings->getMaxRoamingHeroes()
 		|| heroCount >= cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_ON_MAP_CAP)
 		|| heroCount >= cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_TOTAL_CAP);
 }
@@ -205,7 +204,7 @@ float HeroManager::getFightingStrengthCached(const CGHeroInstance * hero) const
 	auto cached = knownFightingStrength.find(hero->id);
 
 	//FIXME: fallback to hero->getFightingStrength() is VERY slow on higher difficulties (no object graph? map reveal?)
-	return cached != knownFightingStrength.end() ? cached->second : hero->getHeroStrength();
+	return cached != knownFightingStrength.end() ? cached->second : hero->getFightingStrength();
 }
 
 float HeroManager::getMagicStrength(const CGHeroInstance * hero) const
@@ -282,7 +281,7 @@ const CGHeroInstance * HeroManager::findHeroWithGrail() const
 	return nullptr;
 }
 
-const CGHeroInstance * HeroManager::findWeakHeroToDismiss(uint64_t armyLimit, const CGTownInstance* townToSpare) const
+const CGHeroInstance * HeroManager::findWeakHeroToDismiss(uint64_t armyLimit) const
 {
 	const CGHeroInstance * weakestHero = nullptr;
 	auto myHeroes = ai->cb->getHeroesInfo();
@@ -293,13 +292,12 @@ const CGHeroInstance * HeroManager::findWeakHeroToDismiss(uint64_t armyLimit, co
 			|| existingHero->getArmyStrength() >armyLimit
 			|| getHeroRole(existingHero) == HeroRole::MAIN
 			|| existingHero->movementPointsRemaining()
-			|| (townToSpare != nullptr && existingHero->visitedTown == townToSpare)
 			|| existingHero->artifactsWorn.size() > (existingHero->hasSpellbook() ? 2 : 1))
 		{
 			continue;
 		}
 
-		if(!weakestHero || weakestHero->getHeroStrength() > existingHero->getHeroStrength())
+		if(!weakestHero || weakestHero->getFightingStrength() > existingHero->getFightingStrength())
 		{
 			weakestHero = existingHero;
 		}

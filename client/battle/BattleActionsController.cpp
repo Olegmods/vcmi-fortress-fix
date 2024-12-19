@@ -275,7 +275,7 @@ void BattleActionsController::reorderPossibleActionsPriority(const CStack * stac
 				return 2;
 				break;
 			case PossiblePlayerBattleAction::SHOOT:
-				if(targetStack == nullptr || targetStack->unitSide() == stack->unitSide() || !targetStack->alive())
+				if(targetStack == nullptr || targetStack->unitSide() == stack->unitSide())
 					return 100; //bottom priority
 
 				return 4;

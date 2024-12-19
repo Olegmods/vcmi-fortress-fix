@@ -93,7 +93,7 @@ void MapHandler::drawTerrainTile(QPainter & painter, int x, int y, int z)
 	auto & tinfo = map->getTile(int3(x, y, z));
 	ui8 rotation = tinfo.extTileFlags % 4;
 	
-	auto terrainName = tinfo.getTerrain()->getJsonKey();
+	auto terrainName = tinfo.terType->getJsonKey();
 	
 	if(terrainImages.at(terrainName).size() <= tinfo.terView)
 		return;
@@ -110,7 +110,7 @@ void MapHandler::drawRoad(QPainter & painter, int x, int y, int z)
 	
 	if(tinfoUpper && tinfoUpper->roadType)
 	{
-		auto roadName = tinfoUpper->getRoad()->getJsonKey();
+		auto roadName = tinfoUpper->roadType->getJsonKey();
 		QRect source(0, tileSize / 2, tileSize, tileSize / 2);
 		ui8 rotation = (tinfoUpper->extTileFlags >> 4) % 4;
 		bool hflip = (rotation == 1 || rotation == 3);
@@ -123,7 +123,7 @@ void MapHandler::drawRoad(QPainter & painter, int x, int y, int z)
 	
 	if(tinfo.roadType) //print road from this tile
 	{
-		auto roadName = tinfo.getRoad()->getJsonKey();
+		auto roadName = tinfo.roadType->getJsonKey();
 		QRect source(0, 0, tileSize, tileSize / 2);
 		ui8 rotation = (tinfo.extTileFlags >> 4) % 4;
 		bool hflip = (rotation == 1 || rotation == 3);
@@ -139,11 +139,11 @@ void MapHandler::drawRiver(QPainter & painter, int x, int y, int z)
 {
 	auto & tinfo = map->getTile(int3(x, y, z));
 
-	if(!tinfo.hasRiver())
+	if(tinfo.riverType->getId() == River::NO_RIVER)
 		return;
 	
 	//TODO: use ui8 instead of string key
-	auto riverName = tinfo.getRiver()->getJsonKey();
+	auto riverName = tinfo.riverType->getJsonKey();
 
 	if(riverImages.at(riverName).size() <= tinfo.riverDir)
 		return;
@@ -441,9 +441,9 @@ QRgb MapHandler::getTileColor(int x, int y, int z)
 	
 	auto & tile = map->getTile(int3(x, y, z));
 	
-	auto color = tile.getTerrain()->minimapUnblocked;
-	if (tile.blocked() && (!tile.visitable()))
-		color = tile.getTerrain()->minimapBlocked;
+	auto color = tile.terType->minimapUnblocked;
+	if (tile.blocked && (!tile.visitable))
+		color = tile.terType->minimapBlocked;
 	
 	return qRgb(color.r, color.g, color.b);
 }

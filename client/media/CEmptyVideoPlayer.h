@@ -14,6 +14,10 @@
 class CEmptyVideoPlayer final : public IVideoPlayer
 {
 public:
+	void playSpellbookAnimation(const VideoPath & name, const Point & position) override
+	{
+	}
+
 	/// Load video from specified path
 	std::unique_ptr<IVideoInstance> open(const VideoPath & name, float scaleFactor) override
 	{

@@ -90,10 +90,10 @@ int3 IBoatGenerator::bestLocation() const
 		if(!tile)
 			continue; // tile not visible / outside the map
 
-		if(!tile->isWater())
+		if(!tile->terType->isWater())
 			continue;
 
-		if (tile->blocked())
+		if (tile->blocked)
 		{
 			bool hasBoat = false;
 			for (auto const * object : tile->blockingObjects)

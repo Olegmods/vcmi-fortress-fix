@@ -196,7 +196,7 @@ public:
 
 		const auto & t = *gameCallback->getTile(tile);
 
-		auto terrain = t.getTerrainID();
+		auto terrain = t.terType->getId();
 		BattleField terType(0);
 		BattleLayout layout = BattleLayout::createDefaultLayout(gameState->callback, attacker, defender);
 

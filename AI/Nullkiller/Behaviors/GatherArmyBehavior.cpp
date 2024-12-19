@@ -81,13 +81,18 @@ Goals::TGoalVec GatherArmyBehavior::deliverArmyToHero(const Nullkiller * ai, con
 		logAi->trace("Path found %s, %s, %lld", path.toString(), path.targetHero->getObjectName(), path.heroArmy->getArmyStrength());
 #endif
 		
-		if (path.targetHero->getOwner() != ai->playerID)
-			continue;
-		
 		if(path.containsHero(hero))
 		{
 #if NKAI_TRACE_LEVEL >= 2
 			logAi->trace("Selfcontaining path. Ignore");
+#endif
+			continue;
+		}
+
+		if(path.turn() > 0 && ai->dangerHitMap->enemyCanKillOurHeroesAlongThePath(path))
+		{
+#if NKAI_TRACE_LEVEL >= 2
+			logAi->trace("Ignore path. Target hero can be killed by enemy. Our power %lld", path.heroArmy->getArmyStrength());
 #endif
 			continue;
 		}
@@ -145,7 +150,7 @@ Goals::TGoalVec GatherArmyBehavior::deliverArmyToHero(const Nullkiller * ai, con
 		}
 
 		auto danger = path.getTotalDanger();
-		auto isSafe = isSafeToVisit(hero, path.heroArmy, danger, ai->settings->getSafeAttackRatio());
+		auto isSafe = isSafeToVisit(hero, path.heroArmy, danger);
 
 #if NKAI_TRACE_LEVEL >= 2
 		logAi->trace(
@@ -287,6 +292,17 @@ Goals::TGoalVec GatherArmyBehavior::upgradeArmy(const Nullkiller * ai, const CGT
 			continue;
 		}
 
+		auto heroRole = ai->heroManager->getHeroRole(path.targetHero);
+
+		if(heroRole == HeroRole::SCOUT
+			&& ai->dangerHitMap->enemyCanKillOurHeroesAlongThePath(path))
+		{
+#if NKAI_TRACE_LEVEL >= 2
+			logAi->trace("Ignore path. Target hero can be killed by enemy. Our power %lld", path.heroArmy->getArmyStrength());
+#endif
+			continue;
+		}
+
 		auto upgrade = ai->armyManager->calculateCreaturesUpgrade(path.heroArmy, upgrader, availableResources);
 
 		if(!upgrader->garrisonHero
@@ -304,6 +320,14 @@ Goals::TGoalVec GatherArmyBehavior::upgradeArmy(const Nullkiller * ai, const CGT
 
 			armyToGetOrBuy.upgradeValue -= path.heroArmy->getArmyStrength();
 
+			armyToGetOrBuy.addArmyToBuy(
+				ai->armyManager->toSlotInfo(
+					ai->armyManager->getArmyAvailableToBuy(
+						path.heroArmy,
+						upgrader,
+						ai->getFreeResources(),
+						path.turn())));
+
 			upgrade.upgradeValue += armyToGetOrBuy.upgradeValue;
 			upgrade.upgradeCost += armyToGetOrBuy.upgradeCost;
 			vstd::concatenate(upgrade.resultingArmy, armyToGetOrBuy.resultingArmy);
@@ -315,7 +339,8 @@ Goals::TGoalVec GatherArmyBehavior::upgradeArmy(const Nullkiller * ai, const CGT
 			{
 				for(auto hero : cb->getAvailableHeroes(upgrader))
 				{
-					auto scoutReinforcement = ai->armyManager->howManyReinforcementsCanGet(hero, upgrader);
+					auto scoutReinforcement =  ai->armyManager->howManyReinforcementsCanBuy(hero, upgrader)
+						+ ai->armyManager->howManyReinforcementsCanGet(hero, upgrader);
 
 					if(scoutReinforcement >= armyToGetOrBuy.upgradeValue
 						&& ai->getFreeGold() >20000
@@ -341,7 +366,7 @@ Goals::TGoalVec GatherArmyBehavior::upgradeArmy(const Nullkiller * ai, const CGT
 
 		auto danger = path.getTotalDanger();
 
-		auto isSafe = isSafeToVisit(path.targetHero, path.heroArmy, danger, ai->settings->getSafeAttackRatio());
+		auto isSafe = isSafeToVisit(path.targetHero, path.heroArmy, danger);
 
 #if NKAI_TRACE_LEVEL >= 2
 		logAi->trace(

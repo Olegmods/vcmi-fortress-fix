@@ -90,6 +90,7 @@ public:
 class CInfoBoxPopup : public CWindowObject
 {
 	std::shared_ptr<CIntObject> tooltip;
+	Point toScreen(Point pos);
 
 	Point dragDistance;
 

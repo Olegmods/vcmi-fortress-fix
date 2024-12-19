@@ -18,7 +18,6 @@
 #include "../gui/CursorHandler.h"
 #include "../gui/EventDispatcher.h"
 #include "../gui/ShortcutHandler.h"
-#include "../render/IScreenHandler.h"
 
 #include "../../lib/CConfigHandler.h"
 
@@ -199,10 +198,9 @@ void InputSourceGameController::tryToConvertCursor()
 	assert(CCS->curh);
 	if(CCS->curh->getShowType() == Cursor::ShowType::HARDWARE)
 	{
-		int scalingFactor = GH.screenHandler().getScalingFactor();
 		const Point & cursorPosition = GH.getCursorPosition();
 		CCS->curh->changeCursor(Cursor::ShowType::SOFTWARE);
-		CCS->curh->cursorMove(cursorPosition.x * scalingFactor, cursorPosition.y * scalingFactor);
+		CCS->curh->cursorMove(cursorPosition.x, cursorPosition.y);
 		GH.input().setCursorPosition(cursorPosition);
 	}
 }
@@ -227,13 +225,12 @@ void InputSourceGameController::doCursorMove(int deltaX, int deltaY)
 		return;
 	const Point & screenSize = GH.screenDimensions();
 	const Point & cursorPosition = GH.getCursorPosition();
-	int scalingFactor = GH.screenHandler().getScalingFactor();
 	int newX = std::min(std::max(cursorPosition.x + deltaX, 0), screenSize.x);
 	int newY = std::min(std::max(cursorPosition.y + deltaY, 0), screenSize.y);
 	Point targetPosition{newX, newY};
 	GH.input().setCursorPosition(targetPosition);
 	if(CCS && CCS->curh)
-		CCS->curh->cursorMove(GH.getCursorPosition().x * scalingFactor, GH.getCursorPosition().y * scalingFactor);
+		CCS->curh->cursorMove(GH.getCursorPosition().x, GH.getCursorPosition().y);
 }
 
 int InputSourceGameController::getMoveDis(float planDis)

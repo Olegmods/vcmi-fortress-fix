@@ -483,7 +483,7 @@
 		"targetType" : "CREATURE",
 
 		"animation":{
-			"affect":[{ "defName" : "C01SPE0", "transparency" : 0.5}]
+			"affect":["C01SPE0"]
 		},
 		"sounds": {
 			"cast": "RESURECT"
@@ -531,7 +531,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"
@@ -603,7 +602,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"

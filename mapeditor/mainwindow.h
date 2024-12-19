@@ -28,7 +28,6 @@ class MainWindow : public QMainWindow
 	const QString mainWindowSizeSetting = "MainWindow/Size";
 	const QString mainWindowPositionSetting = "MainWindow/Position";
 	const QString lastDirectorySetting = "MainWindow/Directory";
-	const QString recentlyOpenedFilesSetting = "MainWindow/RecentlyOpenedFiles";
 
 #ifdef ENABLE_QT_TRANSLATIONS
 	QTranslator translator;
@@ -59,10 +58,6 @@ public:
 
 private slots:
 	void on_actionOpen_triggered();
-	
-	void on_actionOpenRecent_triggered();
-
-	void on_menuOpenRecent_aboutToShow();
 
 	void on_actionSave_as_triggered();
 
@@ -158,8 +153,8 @@ public slots:
 
 private:
 	void preparePreview(const QModelIndex & index);
-	void addGroupIntoCatalog(const QString & groupName, bool staticOnly);
-	void addGroupIntoCatalog(const QString & groupName, bool useCustomName, bool staticOnly, int ID);
+	void addGroupIntoCatalog(const std::string & groupName, bool staticOnly);
+	void addGroupIntoCatalog(const std::string & groupName, bool useCustomName, bool staticOnly, int ID);
 	
 	QAction * getActionPlayer(const PlayerColor &);
 
@@ -174,8 +169,6 @@ private:
 	void saveUserSettings();
 
 	void parseCommandLine(ExtractionOptions & extractionOptions);
-
-	void updateRecentMenu(const QString & filenameSelect);
 
 private:
     Ui::MainWindow * ui;

@@ -88,28 +88,25 @@ void DwellingInstanceConstructor::randomizeObject(CGDwelling * dwelling, vstd::R
 			dwelling->creatures.back().second.push_back(cre->getId());
 	}
 
-	bool guarded = false;
+	bool guarded = false; //TODO: serialize for sanity
 
-	if(guards.getType() == JsonNode::JsonType::DATA_BOOL)
+	if(guards.getType() == JsonNode::JsonType::DATA_BOOL) //simple switch
 	{
-		//simple switch
 		if(guards.Bool())
 		{
 			guarded = true;
 		}
 	}
-	else if(guards.getType() == JsonNode::JsonType::DATA_VECTOR)
+	else if(guards.getType() == JsonNode::JsonType::DATA_VECTOR) //custom guards (eg. Elemental Conflux)
 	{
-		//custom guards (eg. Elemental Conflux)
 		JsonRandom::Variables emptyVariables;
 		for(auto & stack : randomizer.loadCreatures(guards, rng, emptyVariables))
 		{
-			dwelling->putStack(SlotID(dwelling->stacksCount()), new CStackInstance(stack.getId(), stack.count));
+			dwelling->putStack(SlotID(dwelling->stacksCount()), new CStackInstance(stack.type->getId(), stack.count));
 		}
 	}
-	else if (dwelling->ID == Obj::CREATURE_GENERATOR1 || dwelling->ID == Obj::CREATURE_GENERATOR4)
+	else //default condition - creatures are of level 5 or higher
 	{
-		//default condition - this is dwelling with creatures of level 5 or higher
 		for(auto creatureEntry : availableCreatures)
 		{
 			if(creatureEntry.at(0)->getLevel() >= 5)

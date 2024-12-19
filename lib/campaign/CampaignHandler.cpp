@@ -25,6 +25,7 @@
 #include "../modding/IdentifierStorage.h"
 #include "../modding/ModScope.h"
 #include "../texts/CGeneralTextHandler.h"
+#include "../texts/Languages.h"
 #include "../texts/TextOperations.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -63,7 +64,8 @@ std::unique_ptr<Campaign> CampaignHandler::getHeader( const std::string & name)
 {
 	ResourcePath resourceID(name, EResType::CAMPAIGN);
 	std::string modName = VLC->modh->findResourceOrigin(resourceID);
-	std::string encoding = VLC->modh->findResourceEncoding(resourceID);
+	std::string language = VLC->modh->getModLanguage(modName);
+	std::string encoding = Languages::getLanguageOptions(language).encoding;
 	
 	auto ret = std::make_unique<Campaign>();
 	auto fileStream = CResourceHandler::get(modName)->load(resourceID);
@@ -78,7 +80,8 @@ std::shared_ptr<CampaignState> CampaignHandler::getCampaign( const std::string &
 {
 	ResourcePath resourceID(name, EResType::CAMPAIGN);
 	std::string modName = VLC->modh->findResourceOrigin(resourceID);
-	std::string encoding = VLC->modh->findResourceEncoding(resourceID);
+	std::string language = VLC->modh->getModLanguage(modName);
+	std::string encoding = Languages::getLanguageOptions(language).encoding;
 	
 	auto ret = std::make_unique<CampaignState>();
 	

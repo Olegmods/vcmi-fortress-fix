@@ -38,7 +38,6 @@
 #include "../widgets/VideoWidget.h"
 #include "../windows/InfoWindows.h"
 #include "../CServerHandler.h"
-#include "../render/AssetGenerator.h"
 
 #include "../CGameInfo.h"
 #include "../CPlayerInterface.h"
@@ -362,6 +361,17 @@ void CMainMenu::update()
 		menu->switchToTab(menu->getActiveTab());
 	}
 
+	static bool warnedAboutModDependencies = false;
+
+	if (!warnedAboutModDependencies)
+	{
+		warnedAboutModDependencies = true;
+		auto errorMessages = CGI->modh->getModLoadErrors();
+
+		if (!errorMessages.empty())
+			CInfoWindow::showInfoDialog(errorMessages, std::vector<std::shared_ptr<CComponent>>(), PlayerColor(1));
+	}
+
 	// Handles mouse and key input
 	GH.handleEvents();
 	GH.windows().simpleRedraw();
@@ -393,9 +403,6 @@ void CMainMenu::openCampaignScreen(std::string name)
 {
 	auto const & config = CMainMenuConfig::get().getCampaigns();
 
-	AssetGenerator::createCampaignBackground();
-	AssetGenerator::createChroniclesCampaignImages();
-
 	if(!vstd::contains(config.Struct(), name))
 	{
 		logGlobal->error("Unknown campaign set: %s", name);
@@ -406,9 +413,7 @@ void CMainMenu::openCampaignScreen(std::string name)
 	for (auto const & entry : config[name]["items"].Vector())
 	{
 		ResourcePath resourceID(entry["file"].String(), EResType::CAMPAIGN);
-		if(entry["optional"].Bool())
-			continue;
-		if(!CResourceHandler::get()->existsResource(resourceID))
+		if (!CResourceHandler::get()->existsResource(resourceID))
 			campaignsFound = false;
 	}
 

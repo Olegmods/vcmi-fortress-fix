@@ -620,6 +620,7 @@
 				"defaultRepositoryURL", 
 				"extraRepositoryURL", 
 				"extraRepositoryEnabled", 
+				"enableInstalledMods", 
 				"autoCheckRepositories", 
 				"ignoreSslErrors",
 				"updateOnStartup", 
@@ -645,6 +646,10 @@
 				"setupCompleted" : {
 					"type" : "boolean",
 					"default" : false
+				},
+				"enableInstalledMods" : {
+					"type" : "boolean",
+					"default" : true
 				},
 				"ignoreSslErrors" : {
 					"type" : "boolean",

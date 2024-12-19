@@ -162,9 +162,9 @@ void CAltarCreatures::makeDeal()
 	for(int & units : unitsOnAltar)
 		units = 0;
 
-	for(const auto & heroSlot : offerTradePanel->slots)
+	for(auto heroSlot : offerTradePanel->slots)
 	{
-		heroSlot->setID(CreatureID::NONE);
+		heroSlot->setType(EType::CREATURE_PLACEHOLDER);
 		heroSlot->subtitle->clear();
 	}
 	deselect();
@@ -175,16 +175,16 @@ CMarketBase::MarketShowcasesParams CAltarCreatures::getShowcasesParams() const
 	std::optional<ShowcaseParams> bidSelected = std::nullopt;
 	std::optional<ShowcaseParams> offerSelected = std::nullopt;
 	if(bidTradePanel->isHighlighted())
-		bidSelected = ShowcaseParams {std::to_string(offerSlider->getValue()), CGI->creatures()->getByIndex(bidTradePanel->getHighlightedItemId())->getIconIndex()};
+		bidSelected = ShowcaseParams {std::to_string(offerSlider->getValue()), CGI->creatures()->getByIndex(bidTradePanel->getSelectedItemId())->getIconIndex()};
 	if(offerTradePanel->isHighlighted() && offerSlider->getValue() > 0)
-		offerSelected = ShowcaseParams {offerTradePanel->highlightedSlot->subtitle->getText(), CGI->creatures()->getByIndex(offerTradePanel->getHighlightedItemId())->getIconIndex()};
+		offerSelected = ShowcaseParams {offerTradePanel->highlightedSlot->subtitle->getText(), CGI->creatures()->getByIndex(offerTradePanel->getSelectedItemId())->getIconIndex()};
 	return MarketShowcasesParams {bidSelected, offerSelected};
 }
 
 void CAltarCreatures::sacrificeAll()
 {
 	std::optional<SlotID> lastSlot;
-	for(const auto & heroSlot : bidTradePanel->slots)
+	for(auto heroSlot : bidTradePanel->slots)
 	{
 		auto stackCount = hero->getStackCount(SlotID(heroSlot->serial));
 		if(stackCount > unitsOnAltar[heroSlot->serial])
@@ -211,8 +211,7 @@ void CAltarCreatures::sacrificeAll()
 void CAltarCreatures::updateAltarSlot(const std::shared_ptr<CTradeableItem> & slot)
 {
 	auto units = unitsOnAltar[slot->serial];
-	const auto [oppositeSlot, oppositePanel] = getOpposite(slot);
-	slot->setID(units > 0 ? oppositeSlot->id : CreatureID::NONE);
+	slot->setType(units > 0 ? EType::CREATURE : EType::CREATURE_PLACEHOLDER);
 	slot->subtitle->setText(units > 0 ?
 		boost::str(boost::format(CGI->generaltexth->allTexts[122]) % std::to_string(hero->calculateXp(units * expPerUnit[slot->serial]))) : "");
 }
@@ -235,9 +234,21 @@ void CAltarCreatures::onSlotClickPressed(const std::shared_ptr<CTradeableItem> &
 	if(newSlot == curPanel->highlightedSlot)
 		return;
 
+	auto oppositePanel = bidTradePanel;
 	curPanel->onSlotClickPressed(newSlot);
-	auto [oppositeSlot, oppositePanel] = getOpposite(newSlot);
-	oppositePanel->onSlotClickPressed(oppositeSlot);
+	if(curPanel->highlightedSlot == bidTradePanel->highlightedSlot)
+	{
+		oppositePanel = offerTradePanel;
+	}
+	std::shared_ptr<CTradeableItem> oppositeNewSlot;
+	for(const auto & slot : oppositePanel->slots)
+		if(slot->serial == newSlot->serial)
+		{
+			oppositeNewSlot = slot;
+			break;
+		}
+	assert(oppositeNewSlot);
+	oppositePanel->onSlotClickPressed(oppositeNewSlot);
 	highlightingChanged();
 	redraw();
 }
@@ -247,30 +258,11 @@ std::string CAltarCreatures::getTraderText()
 	if(bidTradePanel->isHighlighted() && offerTradePanel->isHighlighted())
 	{
 		MetaString message = MetaString::createFromTextID("core.genrltxt.484");
-		message.replaceNamePlural(CreatureID(bidTradePanel->getHighlightedItemId()));
+		message.replaceNamePlural(CreatureID(bidTradePanel->getSelectedItemId()));
 		return message.toString();
 	}
 	else
 	{
 		return "";
 	}
-}
-
-std::tuple<const std::shared_ptr<CTradeableItem>, std::shared_ptr<TradePanelBase>> CAltarCreatures::getOpposite(
-	const std::shared_ptr<CTradeableItem> & curSlot)
-{
-	assert(curSlot);
-
-	auto oppositePanel = bidTradePanel;
-	if(vstd::contains(bidTradePanel->slots, curSlot))
-		oppositePanel = offerTradePanel;
-
-	std::shared_ptr<CTradeableItem> oppositeSlot;
-	for(const auto & slot : oppositePanel->slots)
-		if (slot->serial == curSlot->serial)
-		{
-			oppositeSlot = slot;
-			break;
-		}
-	return std::make_tuple(oppositeSlot, oppositePanel);
 }

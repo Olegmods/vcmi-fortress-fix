@@ -9,7 +9,6 @@
  */
 #include "StdInc.h"
 #include "BattleExchangeVariant.h"
-#include "BattleEvaluator.h"
 #include "../../lib/CStack.h"
 
 AttackerValue::AttackerValue()
@@ -214,8 +213,7 @@ EvaluationResult BattleExchangeEvaluator::findBestTarget(
 	const battle::Unit * activeStack,
 	PotentialTargets & targets,
 	DamageCache & damageCache,
-	std::shared_ptr<HypotheticBattle> hb,
-	bool siegeDefense)
+	std::shared_ptr<HypotheticBattle> hb)
 {
 	EvaluationResult result(targets.bestAction());
 
@@ -233,9 +231,6 @@ EvaluationResult BattleExchangeEvaluator::findBestTarget(
 
 		for(auto & ap : targets.possibleAttacks)
 		{
-			if (siegeDefense && !hb->battleIsInsideWalls(ap.from))
-				continue;
-
 			float score = evaluateExchange(ap, 0, targets, damageCache, hbWaited);
 
 			if(score > result.score)
@@ -268,9 +263,6 @@ EvaluationResult BattleExchangeEvaluator::findBestTarget(
 
 	for(auto & ap : targets.possibleAttacks)
 	{
-		if (siegeDefense && !hb->battleIsInsideWalls(ap.from))
-			continue;
-
 		float score = evaluateExchange(ap, 0, targets, damageCache, hb);
 		bool sameScoreButWaited = vstd::isAlmostEqual(score, result.score) && result.wait;
 
@@ -358,32 +350,11 @@ MoveTarget BattleExchangeEvaluator::findMoveTowardsUnreachable(
 		if(distance <= speed)
 			continue;
 
-		float penaltyMultiplier = 1.0f; // Default multiplier, no penalty
-		float closestAllyDistance = std::numeric_limits<float>::max();
-
-		for (const battle::Unit* ally : hb->battleAliveUnits()) {
-			if (ally == activeStack) 
-				continue;
-			if (ally->unitSide() != activeStack->unitSide()) 
-				continue;
-
-			float allyDistance = dists.distToNearestNeighbour(ally, enemy);
-			if (allyDistance < closestAllyDistance)
-			{
-				closestAllyDistance = allyDistance;
-			}
-		}
-
-		// If an ally is closer to the enemy, compute the penaltyMultiplier
-		if (closestAllyDistance < distance) {
-			penaltyMultiplier = closestAllyDistance / distance; // Ratio of distances
-		}
-
 		auto turnsToRich = (distance - 1) / speed + 1;
 		auto hexes = enemy->getSurroundingHexes();
 		auto enemySpeed = enemy->getMovementRange();
 		auto speedRatio = speed / static_cast<float>(enemySpeed);
-		auto multiplier = (speedRatio > 1 ? 1 : speedRatio) * penaltyMultiplier;
+		auto multiplier = speedRatio > 1 ? 1 : speedRatio;
 
 		for(auto & hex : hexes)
 		{
@@ -935,7 +906,7 @@ std::vector<const battle::Unit *> BattleExchangeEvaluator::getOneTurnReachableUn
 {
 	std::vector<const battle::Unit *> result;
 
-	for(int i = 0; i < turnOrder.size(); i++, turn++)
+	for(int i = 0; i < turnOrder.size(); i++)
 	{
 		auto & turnQueue = turnOrder[i];
 		HypotheticBattle turnBattle(env.get(), cb);

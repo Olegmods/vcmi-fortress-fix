@@ -17,7 +17,6 @@
 #include "../render/CAnimation.h"
 #include "../render/Canvas.h"
 #include "../render/ColorFilter.h"
-#include "../render/Colors.h"
 #include "../render/IRenderHandler.h"
 
 static const ColorRGBA creatureBlueBorder = { 0, 255, 255, 255 };
@@ -200,8 +199,8 @@ CreatureAnimation::CreatureAnimation(const AnimationPath & name_, TSpeedControll
 	  speedController(controller),
 	  once(false)
 {
-	forward = GH.renderHandler().loadAnimation(name_, EImageBlitMode::WITH_SHADOW_AND_OVERLAY);
-	reverse = GH.renderHandler().loadAnimation(name_, EImageBlitMode::WITH_SHADOW_AND_OVERLAY);
+	forward = GH.renderHandler().loadAnimation(name_, EImageBlitMode::ALPHA);
+	reverse = GH.renderHandler().loadAnimation(name_, EImageBlitMode::ALPHA);
 
 	// if necessary, add one frame into vcmi-only group DEAD
 	if(forward->size(size_t(ECreatureAnimType::DEAD)) == 0)
@@ -340,14 +339,15 @@ void CreatureAnimation::nextFrame(Canvas & canvas, const ColorFilter & shifter, 
 
 	if(image)
 	{
+		image->setShadowEnabled(true);
+		image->setOverlayEnabled(isIdle());
 		if (isIdle())
 			image->setOverlayColor(genBorderColor(getBorderStrength(elapsedTime), border));
-		else
-			image->setOverlayColor(Colors::TRANSPARENCY);
 
 		image->adjustPalette(shifter, 0);
 
 		canvas.draw(image, pos.topLeft(), Rect(0, 0, pos.w, pos.h));
+
 	}
 }
 

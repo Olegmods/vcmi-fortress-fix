@@ -234,9 +234,8 @@ JsonNode JsonUtils::assembleFromFiles(const JsonNode & files, bool & isValid)
 {
 	if (files.isVector())
 	{
-		assert(!files.getModScope().empty());
 		auto configList = files.convertTo<std::vector<std::string> >();
-		JsonNode result = JsonUtils::assembleFromFiles(configList, files.getModScope(), isValid);
+		JsonNode result = JsonUtils::assembleFromFiles(configList, isValid);
 
 		return result;
 	}
@@ -256,10 +255,10 @@ JsonNode JsonUtils::assembleFromFiles(const JsonNode & files)
 JsonNode JsonUtils::assembleFromFiles(const std::vector<std::string> & files)
 {
 	bool isValid = false;
-	return assembleFromFiles(files, "", isValid);
+	return assembleFromFiles(files, isValid);
 }
 
-JsonNode JsonUtils::assembleFromFiles(const std::vector<std::string> & files, std::string modName, bool & isValid)
+JsonNode JsonUtils::assembleFromFiles(const std::vector<std::string> & files, bool & isValid)
 {
 	isValid = true;
 	JsonNode result;
@@ -268,10 +267,10 @@ JsonNode JsonUtils::assembleFromFiles(const std::vector<std::string> & files, st
 	{
 		JsonPath path = JsonPath::builtinTODO(file);
 
-		if (CResourceHandler::get(modName)->existsResource(path))
+		if (CResourceHandler::get()->existsResource(path))
 		{
 			bool isValidFile = false;
-			JsonNode section(JsonPath::builtinTODO(file), modName, isValidFile);
+			JsonNode section(JsonPath::builtinTODO(file), isValidFile);
 			merge(result, section);
 			isValid |= isValidFile;
 		}

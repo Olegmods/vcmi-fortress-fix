@@ -39,25 +39,9 @@ void CGMarket::onHeroVisit(const CGHeroInstance * h) const
 	cb->showObjectWindow(this, EOpenWindowMode::MARKET_WINDOW, h, true);
 }
 
-std::string CGMarket::getPopupText(PlayerColor player) const
-{
-	if (!getMarketHandler()->hasDescription())
-		return getHoverText(player);
-
-	MetaString message = MetaString::createFromRawString("{%s}\r\n\r\n%s");
-	message.replaceName(ID);
-	message.replaceTextID(TextIdentifier(getObjectHandler()->getBaseTextID(), "description").get());
-	return message.toString();
-}
-
-std::string CGMarket::getPopupText(const CGHeroInstance * hero) const
-{
-	return getPopupText(hero->getOwner());
-}
-
 int CGMarket::getMarketEfficiency() const
 {
-	return getMarketHandler()->getMarketEfficiency();
+	return marketEfficiency;
 }
 
 int CGMarket::availableUnits(EMarketMode mode, int marketItemSerial) const
@@ -65,16 +49,12 @@ int CGMarket::availableUnits(EMarketMode mode, int marketItemSerial) const
 	return -1;
 }
 
-std::shared_ptr<MarketInstanceConstructor> CGMarket::getMarketHandler() const
+std::set<EMarketMode> CGMarket::availableModes() const
 {
 	const auto & baseHandler = getObjectHandler();
 	const auto & ourHandler = std::dynamic_pointer_cast<MarketInstanceConstructor>(baseHandler);
-	return ourHandler;
-}
 
-std::set<EMarketMode> CGMarket::availableModes() const
-{
-	return getMarketHandler()->availableModes();
+	return ourHandler->availableModes();
 }
 
 CGMarket::CGMarket(IGameCallback *cb):
@@ -88,8 +68,11 @@ std::vector<TradeItemBuy> CGBlackMarket::availableItemsIds(EMarketMode mode) con
 	case EMarketMode::RESOURCE_ARTIFACT:
 		{
 			std::vector<TradeItemBuy> ret;
-			for(const auto & a : artifacts)
-				ret.push_back(a);
+			for(const CArtifact *a : artifacts)
+				if(a)
+					ret.push_back(a->getId());
+				else
+					ret.push_back(ArtifactID{});
 			return ret;
 		}
 	default:
@@ -123,11 +106,6 @@ std::vector<TradeItemBuy> CGUniversity::availableItemsIds(EMarketMode mode) cons
 		default:
 			return std::vector<TradeItemBuy>();
 	}
-}
-
-std::string CGUniversity::getSpeechTranslated() const
-{
-	return getMarketHandler()->getSpeechTranslated();
 }
 
 void CGUniversity::onHeroVisit(const CGHeroInstance * h) const

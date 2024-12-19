@@ -34,8 +34,6 @@ set(editor_SRCS
 		inspector/messagewidget.cpp
 		inspector/rewardswidget.cpp
 		inspector/questwidget.cpp
-		inspector/heroartifactswidget.cpp
-		inspector/artifactwidget.cpp
 		inspector/heroskillswidget.cpp
 		inspector/herospellwidget.cpp
 		inspector/PickObjectDelegate.cpp
@@ -78,8 +76,6 @@ set(editor_HEADERS
 		inspector/messagewidget.h
 		inspector/rewardswidget.h
 		inspector/questwidget.h
-		inspector/heroartifactswidget.h
-		inspector/artifactwidget.h
 		inspector/heroskillswidget.h
 		inspector/herospellwidget.h
 		inspector/PickObjectDelegate.h
@@ -112,8 +108,6 @@ set(editor_FORMS
 		inspector/messagewidget.ui
 		inspector/rewardswidget.ui
 		inspector/questwidget.ui
-		inspector/heroartifactswidget.ui
-		inspector/artifactwidget.ui
 		inspector/heroskillswidget.ui
 		inspector/herospellwidget.ui
 		inspector/portraitwidget.ui

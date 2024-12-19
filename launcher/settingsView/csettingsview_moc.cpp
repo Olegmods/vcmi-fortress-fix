@@ -517,26 +517,36 @@ void CSettingsView::loadTranslation()
 	if (!mainWindow)
 		return;
 
-	auto translationStatus = mainWindow->getTranslationStatus();
-	bool showTranslation = translationStatus == ETranslationStatus::DISABLED || translationStatus == ETranslationStatus::NOT_INSTALLLED;
+	QString languageName = QString::fromStdString(settings["general"]["language"].String());
+	QString modName = mainWindow->getModView()->getTranslationModName(languageName);
+	bool translationExists = !modName.isEmpty();
+	bool translationNeeded = languageName != baseLanguage;
+	bool showTranslation = translationNeeded && translationExists;
 
 	ui->labelTranslation->setVisible(showTranslation);
 	ui->labelTranslationStatus->setVisible(showTranslation);
 	ui->pushButtonTranslation->setVisible(showTranslation);
-	ui->pushButtonTranslation->setVisible(translationStatus != ETranslationStatus::ACTIVE);
 
-	if (translationStatus == ETranslationStatus::ACTIVE)
+	if (!translationExists || !translationNeeded)
+		return;
+
+	bool translationAvailable = mainWindow->getModView()->isModAvailable(modName);
+	bool translationEnabled = mainWindow->getModView()->isModEnabled(modName);
+
+	ui->pushButtonTranslation->setVisible(!translationEnabled);
+
+	if (translationEnabled)
 	{
 		ui->labelTranslationStatus->setText(tr("Active"));
 	}
 
-	if (translationStatus == ETranslationStatus::DISABLED)
+	if (!translationEnabled && !translationAvailable)
 	{
 		ui->labelTranslationStatus->setText(tr("Disabled"));
 		ui->pushButtonTranslation->setText(tr("Enable"));
 	}
 
-	if (translationStatus == ETranslationStatus::NOT_INSTALLLED)
+	if (translationAvailable)
 	{
 		ui->labelTranslationStatus->setText(tr("Not Installed"));
 		ui->pushButtonTranslation->setText(tr("Install"));
@@ -604,7 +614,7 @@ void CSettingsView::on_lineEditRepositoryExtra_textEdited(const QString &arg1)
 void CSettingsView::on_spinBoxInterfaceScaling_valueChanged(int arg1)
 {
 	Settings node = settings.write["video"]["resolution"]["scaling"];
-	node->Float() = ui->buttonScalingAuto->isChecked() ? 0 : arg1;
+	node->Float() = arg1;
 }
 
 void CSettingsView::on_refreshRepositoriesButton_clicked()

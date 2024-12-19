@@ -86,11 +86,6 @@ JsonNode::JsonNode(const std::string & string)
 {
 }
 
-JsonNode::JsonNode(const JsonMap & map)
-	: data(map)
-{
-}
-
 JsonNode::JsonNode(const std::byte * data, size_t datasize, const std::string & fileName)
 	: JsonNode(data, datasize, JsonParsingSettings(), fileName)
 {
@@ -115,17 +110,17 @@ JsonNode::JsonNode(const JsonPath & fileURI, const JsonParsingSettings & parserS
 	*this = parser.parse(fileURI.getName());
 }
 
-JsonNode::JsonNode(const JsonPath & fileURI, const std::string & modName)
+JsonNode::JsonNode(const JsonPath & fileURI, const std::string & idx)
 {
-	auto file = CResourceHandler::get(modName)->load(fileURI)->readAll();
+	auto file = CResourceHandler::get(idx)->load(fileURI)->readAll();
 
 	JsonParser parser(reinterpret_cast<std::byte *>(file.first.get()), file.second, JsonParsingSettings());
 	*this = parser.parse(fileURI.getName());
 }
 
-JsonNode::JsonNode(const JsonPath & fileURI, const std::string & modName, bool & isValidSyntax)
+JsonNode::JsonNode(const JsonPath & fileURI, bool & isValidSyntax)
 {
-	auto file = CResourceHandler::get(modName)->load(fileURI)->readAll();
+	auto file = CResourceHandler::get()->load(fileURI)->readAll();
 
 	JsonParser parser(reinterpret_cast<std::byte *>(file.first.get()), file.second, JsonParsingSettings());
 	*this = parser.parse(fileURI.getName());
