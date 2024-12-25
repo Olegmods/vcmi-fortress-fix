@@ -56,9 +56,9 @@ public:
 	float evaluateSecSkill(SecondarySkill skill, const CGHeroInstance * hero) const;
 	float evaluateHero(const CGHeroInstance * hero) const;
 	bool canRecruitHero(const CGTownInstance * t = nullptr) const;
-	bool heroCapReached(bool includeGarrisoned = true) const;
+	bool heroCapReached() const;
 	const CGHeroInstance * findHeroWithGrail() const;
-	const CGHeroInstance * findWeakHeroToDismiss(uint64_t armyLimit, const CGTownInstance * townToSpare = nullptr) const;
+	const CGHeroInstance * findWeakHeroToDismiss(uint64_t armyLimit) const;
 	float getMagicStrength(const CGHeroInstance * hero) const;
 	float getFightingStrengthCached(const CGHeroInstance * hero) const;
 

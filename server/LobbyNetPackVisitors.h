@@ -39,7 +39,6 @@ public:
 	void visitLobbyChatMessage(LobbyChatMessage & pack) override;
 	void visitLobbyGuiAction(LobbyGuiAction & pack) override;
 	void visitLobbyPvPAction(LobbyPvPAction & pack) override;
-	void visitLobbyDelete(LobbyDelete & pack) override;
 };
 
 class ApplyOnServerAfterAnnounceNetPackVisitor : public VCMI_LIB_WRAP_NAMESPACE(ICPackVisitor)
@@ -97,5 +96,4 @@ public:
 	void visitLobbySetDifficulty(LobbySetDifficulty & pack) override;
 	void visitLobbyForceSetPlayer(LobbyForceSetPlayer & pack) override;
 	void visitLobbyPvPAction(LobbyPvPAction & pack) override;
-	void visitLobbyDelete(LobbyDelete & pack) override;
 };

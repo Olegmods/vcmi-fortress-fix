@@ -103,9 +103,6 @@ void CMapEvent::serializeJson(JsonSerializeFormat & handler)
 	handler.serializeInt("firstOccurrence", firstOccurrence);
 	handler.serializeInt("nextOccurrence", nextOccurrence);
 	resources.serializeJson(handler, "resources");
-
-	auto deletedObjects = handler.enterArray("deletedObjectsInstances");
-	deletedObjects.serializeArray(deletedObjectsInstances);
 }
 
 void CCastleEvent::serializeJson(JsonSerializeFormat & handler)
@@ -134,29 +131,32 @@ void CCastleEvent::serializeJson(JsonSerializeFormat & handler)
 }
 
 TerrainTile::TerrainTile():
-	riverType(River::NO_RIVER),
-	roadType(Road::NO_ROAD),
+	terType(nullptr),
+	riverType(VLC->riverTypeHandler->getById(River::NO_RIVER)),
+	roadType(VLC->roadTypeHandler->getById(Road::NO_ROAD)),
 	terView(0),
 	riverDir(0),
 	roadDir(0),
-	extTileFlags(0)
+	extTileFlags(0),
+	visitable(false),
+	blocked(false)
 {
 }
 
 bool TerrainTile::entrableTerrain(const TerrainTile * from) const
 {
-	return entrableTerrain(from ? from->isLand() : true, from ? from->isWater() : true);
+	return entrableTerrain(from ? from->terType->isLand() : true, from ? from->terType->isWater() : true);
 }
 
 bool TerrainTile::entrableTerrain(bool allowLand, bool allowSea) const
 {
-	return getTerrain()->isPassable()
-			&& ((allowSea && isWater())  ||  (allowLand && isLand()));
+	return terType->isPassable()
+			&& ((allowSea && terType->isWater())  ||  (allowLand && terType->isLand()));
 }
 
 bool TerrainTile::isClear(const TerrainTile * from) const
 {
-	return entrableTerrain(from) && !blocked();
+	return entrableTerrain(from) && !blocked;
 }
 
 Obj TerrainTile::topVisitableId(bool excludeTop) const
@@ -177,7 +177,7 @@ CGObjectInstance * TerrainTile::topVisitableObj(bool excludeTop) const
 
 EDiggingStatus TerrainTile::getDiggingStatus(const bool excludeTop) const
 {
-	if(isWater() || !getTerrain()->isPassable())
+	if(terType->isWater() || !terType->isPassable())
 		return EDiggingStatus::WRONG_TERRAIN;
 
 	int allowedBlocked = excludeTop ? 1 : 0;
@@ -194,64 +194,8 @@ bool TerrainTile::hasFavorableWinds() const
 
 bool TerrainTile::isWater() const
 {
-	return getTerrain()->isWater();
+	return terType->isWater();
 }
-
-bool TerrainTile::isLand() const
-{
-	return getTerrain()->isLand();
-}
-
-bool TerrainTile::visitable() const
-{
-	return !visitableObjects.empty();
-}
-
-bool TerrainTile::blocked() const
-{
-	return !blockingObjects.empty();
-}
-
-bool TerrainTile::hasRiver() const
-{
-	return getRiverID() != RiverId::NO_RIVER;
-}
-
-bool TerrainTile::hasRoad() const
-{
-	return getRoadID() != RoadId::NO_ROAD;
-}
-
-const TerrainType * TerrainTile::getTerrain() const
-{
-	return terrainType.toEntity(VLC);
-}
-
-const RiverType * TerrainTile::getRiver() const
-{
-	return riverType.toEntity(VLC);
-}
-
-const RoadType * TerrainTile::getRoad() const
-{
-	return roadType.toEntity(VLC);
-}
-
-TerrainId TerrainTile::getTerrainID() const
-{
-	return terrainType;
-}
-
-RiverId TerrainTile::getRiverID() const
-{
-	return riverType;
-}
-
-RoadId TerrainTile::getRoadID() const
-{
-	return roadType;
-}
-
 
 CMap::CMap(IGameCallback * cb)
 	: GameCallbackHolder(cb)
@@ -299,10 +243,15 @@ void CMap::removeBlockVisTiles(CGObjectInstance * obj, bool total)
 			{
 				TerrainTile & curt = terrain[zVal][xVal][yVal];
 				if(total || obj->visitableAt(int3(xVal, yVal, zVal)))
+				{
 					curt.visitableObjects -= obj;
-
+					curt.visitable = curt.visitableObjects.size();
+				}
 				if(total || obj->blockingAt(int3(xVal, yVal, zVal)))
+				{
 					curt.blockingObjects -= obj;
+					curt.blocked = curt.blockingObjects.size();
+				}
 			}
 		}
 	}
@@ -321,10 +270,15 @@ void CMap::addBlockVisTiles(CGObjectInstance * obj)
 			{
 				TerrainTile & curt = terrain[zVal][xVal][yVal];
 				if(obj->visitableAt(int3(xVal, yVal, zVal)))
+				{
 					curt.visitableObjects.push_back(obj);
-
+					curt.visitable = true;
+				}
 				if(obj->blockingAt(int3(xVal, yVal, zVal)))
+				{
 					curt.blockingObjects.push_back(obj);
+					curt.blocked = true;
+				}
 			}
 		}
 	}
@@ -427,7 +381,7 @@ int3 CMap::guardingCreaturePosition (int3 pos) const
 	if (!isInTheMap(pos))
 		return int3(-1, -1, -1);
 	const TerrainTile &posTile = getTile(pos);
-	if (posTile.visitable())
+	if (posTile.visitable)
 	{
 		for (CGObjectInstance* obj : posTile.visitableObjects)
 		{
@@ -447,7 +401,7 @@ int3 CMap::guardingCreaturePosition (int3 pos) const
 			if (isInTheMap(pos))
 			{
 				const auto & tile = getTile(pos);
-				if (tile.visitable() && (tile.isWater() == water))
+                if (tile.visitable && (tile.isWater() == water))
 				{
 					for (CGObjectInstance* obj : tile.visitableObjects)
 					{

@@ -72,7 +72,7 @@ void RockFiller::init()
 
 char RockFiller::dump(const int3 & t)
 {
-	if(!map.getTile(t).getTerrain()->isPassable())
+	if(!map.getTile(t).terType->isPassable())
 	{
 		return zone.area()->contains(t) ? 'R' : 'E';
 	}

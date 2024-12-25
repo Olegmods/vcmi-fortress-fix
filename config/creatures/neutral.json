@@ -7,15 +7,15 @@
 		"faction": "neutral",
 		"abilities":
 		{
-			"nonliving" :
-			{
-				"type" : "NON_LIVING"
-			},
 			"magicResistance" :
 			{
 				"type" : "SPELL_DAMAGE_REDUCTION",
 				"subtype" : "spellSchool.any",
 				"val" : 85
+			},
+			"nonliving" :
+			{
+				"type" : "NON_LIVING"
 			}
 		},
 		"graphics" :
@@ -38,15 +38,15 @@
 		"faction": "neutral",
 		"abilities":
 		{
-			"nonliving" :
-			{
-				"type" : "NON_LIVING"
-			},
 			"magicResistance" :
 			{
 				"type" : "SPELL_DAMAGE_REDUCTION",
 				"subtype" : "spellSchool.any",
 				"val" : 95
+			},
+			"nonliving" :
+			{
+				"type" : "NON_LIVING"
 			}
 		},
 		"graphics" :
@@ -68,38 +68,28 @@
 		"level": 10,
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" : 
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
+			"fireBreath" :
 			{
 				"type" : "TWO_HEX_ATTACK_BREATH"
-			},
-			"fear" :
-			{
-				"type" : "FEAR"
-			},
-			"fearless" :
-			{
-				"type" : "FEARLESS"
 			},
 			"spellImmunity" :
 			{
 				"type" : "LEVEL_SPELL_IMMUNITY",
 				"val" : 3
 			},
-			"KING_1" : // Will be affected by Slayer with no expertise
+			"fearless" :
 			{
-				"type" : "KING",
-				"val" : 0
+				"type" : "FEARLESS"
+			},
+			"fear" :
+			{
+				"type" : "FEAR"
 			}
 		},
 		"graphics" :
@@ -121,27 +111,22 @@
 		"level": 10,
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" :
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"crystals" :
-			{
-				"type" : "SPECIAL_CRYSTAL_GENERATION"
-			},
 			"magicResistance" :
 			{
 				"type" : "MAGIC_RESISTANCE",
 				"val" : 20
 			},
-			"KING_1" : // Will be affected by Slayer with no expertise
+			"crystals" :
 			{
-				"type" : "KING",
-				"val" : 0
-			}
+				"type" : "SPECIAL_CRYSTAL_GENERATION"
+			},
+			"FLYING_ARMY" : null
 		},
 		"graphics" :
 		{
@@ -162,16 +147,11 @@
 		"level": 8,
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" :
 			{
 				"type" : "DRAGON_NATURE"
-			},
-			"canFly" :
-			{
-				"type" : "FLYING"
 			},
 			"mirror" :
 			{
@@ -243,11 +223,6 @@
 				"subtype" : "spell.meteorShower",
 				"addInfo" : 5,
 				"val" : 2
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			}
 		},
 		"graphics" :
@@ -270,20 +245,11 @@
 		"level": 10,
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" : 
 			{
 				"type" : "DRAGON_NATURE"
-			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
-			{
-				"type" : "TWO_HEX_ATTACK_BREATH"
 			},
 			"acidBreath" :
 			{
@@ -291,16 +257,15 @@
 				"val" : 25,
 				"addInfo" : 30
 			},
+			"fireBreath" :
+			{
+				"type" : "TWO_HEX_ATTACK_BREATH"
+			},
 			"reduceDefence" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
 				"subtype" : "spell.acidBreath",
 				"val" : 100
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			}
 		},
 		"graphics" :
@@ -323,18 +288,9 @@
 		"extraNames": [ "enchanters" ],
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"shots" : 32,
 		"abilities":
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
-			"noWallPenalty" :
+			"noPenalty" : 
 			{
 				"type" : "NO_WALL_PENALTY"
 			},
@@ -343,24 +299,10 @@
 				"type" : "CASTS",
 				"val" : 5
 			},
-			"castsHaste" :
+			"castsAirShield" :
 			{
 				"type" : "ENCHANTER",
-				"subtype" : "spell.haste",
-				"val" : 3,
-				"addInfo" : 3
-			},
-			"castsSlow" :
-			{
-				"type" : "ENCHANTER",
-				"subtype" : "spell.slow",
-				"val" : 3,
-				"addInfo" : 3
-			},
-			"castsStoneSkin" :
-			{
-				"type" : "ENCHANTER",
-				"subtype" : "spell.stoneSkin",
+				"subtype" : "spell.airShield",
 				"val" : 3,
 				"addInfo" : 3
 			},
@@ -378,13 +320,28 @@
 				"val" : 3,
 				"addInfo" : 3
 			},
-			"castsAirShield" :
+			"castsStoneSkin" :
 			{
 				"type" : "ENCHANTER",
-				"subtype" : "spell.airShield",
+				"subtype" : "spell.stoneSkin",
+				"val" : 3,
+				"addInfo" : 3
+			},
+			"castsSlow" :
+			{
+				"type" : "ENCHANTER",
+				"subtype" : "spell.slow",
+				"val" : 3,
+				"addInfo" : 3
+			},
+			"castsHaste" :
+			{
+				"type" : "ENCHANTER",
+				"subtype" : "spell.haste",
 				"val" : 3,
 				"addInfo" : 3
 			}
+			
 		},
 		"graphics" :
 		{
@@ -411,20 +368,15 @@
 		"extraNames": [ "sharpshooters" ],
 		"faction": "neutral",
 		"excludeFromRandomization" : true,
-		"shots" : 32,
 		"abilities":
 		{
-			"shooter" :
+			"noPenalty" : 
 			{
-				"type" : "SHOOTER"
+				"type" : "NO_WALL_PENALTY"
 			},
 			"noDistancePenalty" :
 			{
 				"type" : "NO_DISTANCE_PENALTY"
-			},
-			"noWallPenalty" :
-			{
-				"type" : "NO_WALL_PENALTY"
 			}
 		},
 		"graphics" :
@@ -450,13 +402,8 @@
 		"index": 138,
 		"level": 1,
 		"faction": "neutral",
-		"shots" : 24,
 		"abilities": 
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
 			"lucky" :
 			{
 				"type" : "LUCK",
@@ -535,7 +482,7 @@
 				"type" : "SPELL_AFTER_ATTACK",
 				"subtype" : "spell.curse",
 				"val" : 50
-			}
+			}			
 		},
 		"graphics" :
 		{
@@ -555,7 +502,6 @@
 		"index": 142,
 		"level": 3,
 		"faction": "neutral",
-		"doubleWide" : true,
 		"abilities":
 		{
 			"sandWalker" :
@@ -565,6 +511,7 @@
 				"propagator" : "HERO"
 			}
 		},
+		"doubleWide" : true,
 		"graphics" :
 		{
 			"animation": "CNOMAD.DEF"
@@ -599,7 +546,7 @@
 				"subtype" : "visionsHeroes",
 				"val" : 3,
 				"valueType" : "INDEPENDENT_MAX",
-				"propagator" : "HERO"
+				"propagator" : "HERO"				
 			},
 			"visionsTowns" :
 			{
@@ -607,7 +554,7 @@
 				"subtype" : "visionsTowns",
 				"val" : 3,
 				"valueType" : "INDEPENDENT_MAX",
-				"propagator" : "HERO"
+				"propagator" : "HERO"				
 			}
 		},
 		"graphics" :

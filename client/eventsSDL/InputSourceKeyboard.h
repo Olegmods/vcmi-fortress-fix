@@ -15,11 +15,7 @@ struct SDL_KeyboardEvent;
 /// Class that handles keyboard input from SDL events
 class InputSourceKeyboard
 {
-	bool wasKeyboardCtrlDown;
-	bool wasKeyboardAltDown;
-	bool wasKeyboardShiftDown;
-
-	std::string getKeyNameWithModifiers(const std::string & keyName, bool keyUp);
+	std::string getKeyNameWithModifiers(const std::string & keyName) const;
 public:
 	InputSourceKeyboard();
 

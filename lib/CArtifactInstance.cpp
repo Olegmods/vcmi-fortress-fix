@@ -20,12 +20,12 @@ VCMI_LIB_NAMESPACE_BEGIN
 void CCombinedArtifactInstance::addPart(CArtifactInstance * art, const ArtifactPosition & slot)
 {
 	auto artInst = static_cast<CArtifactInstance*>(this);
-	assert(vstd::contains_if(artInst->getType()->getConstituents(),
+	assert(vstd::contains_if(artInst->artType->getConstituents(),
 		[=](const CArtifact * partType)
 		{
 			return partType->getId() == art->getTypeId();
 		}));
-	assert(art->getParentNodes().size() == 1  &&  art->getParentNodes().front() == art->getType());
+	assert(art->getParentNodes().size() == 1  &&  art->getParentNodes().front() == art->artType);
 	partsInfo.emplace_back(art, slot);
 	artInst->attachTo(*art);
 }
@@ -77,7 +77,7 @@ void CGrowingArtifactInstance::growingUp()
 {
 	auto artInst = static_cast<CArtifactInstance*>(this);
 	
-	if(artInst->getType()->isGrowing())
+	if(artInst->artType->isGrowing())
 	{
 
 		auto bonus = std::make_shared<Bonus>();
@@ -86,7 +86,7 @@ void CGrowingArtifactInstance::growingUp()
 		bonus->duration = BonusDuration::COMMANDER_KILLED;
 		artInst->accumulateBonus(bonus);
 
-		for(const auto & bonus : artInst->getType()->getBonusesPerLevel())
+		for(const auto & bonus : artInst->artType->getBonusesPerLevel())
 		{
 			// Every n levels
 			if(artInst->valOfBonuses(BonusType::LEVEL_COUNTER) % bonus.first == 0)
@@ -94,7 +94,7 @@ void CGrowingArtifactInstance::growingUp()
 				artInst->accumulateBonus(std::make_shared<Bonus>(bonus.second));
 			}
 		}
-		for(const auto & bonus : artInst->getType()->getThresholdBonuses())
+		for(const auto & bonus : artInst->artType->getThresholdBonuses())
 		{
 			// At n level
 			if(artInst->valOfBonuses(BonusType::LEVEL_COUNTER) == bonus.first)
@@ -125,23 +125,26 @@ CArtifactInstance::CArtifactInstance()
 
 void CArtifactInstance::setType(const CArtifact * art)
 {
-	artTypeID = art->getId();
+	artType = art;
 	attachToSource(*art);
 }
 
 std::string CArtifactInstance::nodeName() const
 {
-	return "Artifact instance of " + (getType() ? getType()->getJsonKey() : std::string("uninitialized")) + " type";
+	return "Artifact instance of " + (artType ? artType->getJsonKey() : std::string("uninitialized")) + " type";
+}
+
+std::string CArtifactInstance::getDescription() const
+{
+	std::string text = artType->getDescriptionTranslated();
+	if(artType->isScroll())
+		ArtifactUtils::insertScrrollSpellName(text, getScrollSpellID());
+	return text;
 }
 
 ArtifactID CArtifactInstance::getTypeId() const
 {
-	return artTypeID;
-}
-
-const CArtifact * CArtifactInstance::getType() const
-{
-	return artTypeID.hasValue() ? artTypeID.toArtifact() : nullptr;
+	return artType->getId();
 }
 
 ArtifactInstanceID CArtifactInstance::getId() const
@@ -156,22 +159,22 @@ void CArtifactInstance::setId(ArtifactInstanceID id)
 
 bool CArtifactInstance::canBePutAt(const CArtifactSet * artSet, ArtifactPosition slot, bool assumeDestRemoved) const
 {
-	return getType()->canBePutAt(artSet, slot, assumeDestRemoved);
+	return artType->canBePutAt(artSet, slot, assumeDestRemoved);
 }
 
 bool CArtifactInstance::isCombined() const
 {
-	return getType()->isCombined();
+	return artType->isCombined();
 }
 
 bool CArtifactInstance::isScroll() const
 {
-	return getType()->isScroll();
+	return artType->isScroll();
 }
 
 void CArtifactInstance::deserializationFix()
 {
-	setType(artTypeID.toArtifact());
+	setType(artType);
 	for(PartInfo & part : partsInfo)
 		attachTo(*part.art);
 }

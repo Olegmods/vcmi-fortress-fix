@@ -378,9 +378,6 @@ void CGTownInstance::onHeroLeave(const CGHeroInstance * h) const
 
 std::string CGTownInstance::getObjectName() const
 {
-	if(ID == Obj::RANDOM_TOWN )
-		return CGObjectInstance::getObjectName();
-
 	return getNameTranslated() + ", " + getTown()->faction->getNameTranslated();
 }
 
@@ -673,9 +670,11 @@ std::vector<TradeItemBuy> CGTownInstance::availableItemsIds(EMarketMode mode) co
 	if(mode == EMarketMode::RESOURCE_ARTIFACT)
 	{
 		std::vector<TradeItemBuy> ret;
-		for(const ArtifactID a : cb->gameState()->map->townMerchantArtifacts)
-			ret.push_back(a);
-
+		for(const CArtifact *a : cb->gameState()->map->townMerchantArtifacts)
+			if(a)
+				ret.push_back(a->getId());
+			else
+				ret.push_back(ArtifactID{});
 		return ret;
 	}
 	else if ( mode == EMarketMode::RESOURCE_SKILL )
@@ -693,7 +692,7 @@ ObjectInstanceID CGTownInstance::getObjInstanceID() const
 
 void CGTownInstance::updateAppearance()
 {
-	auto terrain = cb->gameState()->getTile(visitablePos())->getTerrainID();
+	auto terrain = cb->gameState()->getTile(visitablePos())->terType->getId();
 	//FIXME: not the best way to do this
 	auto app = getObjectHandler()->getOverride(terrain, this);
 	if (app)
@@ -1228,14 +1227,14 @@ void CGTownInstance::fillUpgradeInfo(UpgradeInfo & info, const CStackInstance &s
 {
 	for(const CGTownInstance::TCreaturesSet::value_type & dwelling : creatures)
 	{
-		if (vstd::contains(dwelling.second, stack.getId())) //Dwelling with our creature
+		if (vstd::contains(dwelling.second, stack.type->getId())) //Dwelling with our creature
 		{
 			for(const auto & upgrID : dwelling.second)
 			{
-				if(vstd::contains(stack.getCreature()->upgrades, upgrID)) //possible upgrade
+				if(vstd::contains(stack.type->upgrades, upgrID)) //possible upgrade
 				{
 					info.newID.push_back(upgrID);
-					info.cost.push_back(upgrID.toCreature()->getFullRecruitCost() - stack.getType()->getFullRecruitCost());
+					info.cost.push_back(upgrID.toCreature()->getFullRecruitCost() - stack.type->getFullRecruitCost());
 				}
 			}
 		}

@@ -134,9 +134,7 @@
             "description": "VCMI Windows Ninja using MinGW",
             "inherits": "default-release",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++"
+                "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {

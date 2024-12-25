@@ -5,7 +5,6 @@
 		"level": 1,
 		"faction": "rampart",
 		"upgrades": ["centaurCaptain"],
-		"doubleWide" : true,
 		"hasDoubleWeek": true,
 		"graphics" :
 		{
@@ -27,7 +26,6 @@
 		"index": 15,
 		"level": 1,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"graphics" :
 		{
 			"missile" : null,
@@ -101,14 +99,6 @@
 		"level": 3,
 		"faction": "rampart",
 		"upgrades": ["grandElf"],
-		"shots" : 24,
-		"abilities" :
-		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			}
-		},
 		"graphics" :
 		{
 			"animation": "CELF.DEF",
@@ -132,13 +122,8 @@
 		"index": 19,
 		"level": 3,
 		"faction": "rampart",
-		"shots" : 24,
-		"abilities" :
+		"abilities": 
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
 			"doubleShot" :
 			{
 				"type": "ADDITIONAL_ATTACK",
@@ -169,13 +154,8 @@
 		"index": 20,
 		"level": 4,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
 			"increaseManaCost" :
 			{
 				"type" : "CHANGES_SPELL_COST_FOR_ENEMY",
@@ -202,13 +182,8 @@
 		"index": 21,
 		"level": 4,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
 			"increaseManaCost" :
 			{
 				"type" : "CHANGES_SPELL_COST_FOR_ENEMY",
@@ -288,20 +263,19 @@
 		"index": 24,
 		"level": 6,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
+			"spellResistAura" :
+			{
+				"type" : "SPELL_RESISTANCE_AURA",
+				"val" : 20
+			},
 			"blinds" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
 				"subtype" : "spell.blind",
 				"val" : 20,
 				"addInfo" : [3,0]
-			},
-			"spellResistAura" :
-			{
-				"type" : "SPELL_RESISTANCE_AURA",
-				"val" : 20
 			}
 		},
 		"upgrades": ["warUnicorn"],
@@ -323,20 +297,19 @@
 		"index": 25,
 		"level": 6,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
+			"spellResistAura" :
+			{
+				"type" : "SPELL_RESISTANCE_AURA",
+				"val" : 20
+			},
 			"blinds" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
 				"subtype" : "spell.blind",
 				"val" : 20,
 				"addInfo" : [3,0]
-			},
-			"spellResistAura" :
-			{
-				"type" : "SPELL_RESISTANCE_AURA",
-				"val" : 20
 			}
 		},
 		"graphics" :
@@ -358,18 +331,13 @@
 		"index": 26,
 		"level": 7,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" :
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
+			"fireBreath" :
 			{
 				"type" : "TWO_HEX_ATTACK_BREATH"
 			},
@@ -377,11 +345,6 @@
 			{
 				"type" : "LEVEL_SPELL_IMMUNITY",
 				"val" : 3
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			}
 		},
 		"upgrades": ["goldDragon"],
@@ -403,18 +366,13 @@
 		"index": 27,
 		"level": 7,
 		"faction": "rampart",
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" :
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
+			"fireBreath" :
 			{
 				"type" : "TWO_HEX_ATTACK_BREATH"
 			},
@@ -422,11 +380,6 @@
 			{
 				"type" : "LEVEL_SPELL_IMMUNITY",
 				"val" : 4
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			}
 		},
 		"graphics" :

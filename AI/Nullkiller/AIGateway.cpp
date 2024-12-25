@@ -34,6 +34,11 @@
 namespace NKAI
 {
 
+// our to enemy strength ratio constants
+const float SAFE_ATTACK_CONSTANT = 1.1f;
+const float RETREAT_THRESHOLD = 0.3f;
+const double RETREAT_ABSOLUTE_THRESHOLD = 10000.;
+
 //one thread may be turn of AI and another will be handling a side effect for AI2
 thread_local CCallback * cb = nullptr;
 thread_local AIGateway * ai = nullptr;
@@ -281,9 +286,6 @@ void AIGateway::tileRevealed(const std::unordered_set<int3> & pos)
 		for(const CGObjectInstance * obj : myCb->getVisitableObjs(tile))
 			addVisitableObj(obj);
 	}
-
-	if (nullkiller->settings->isUpdateHitmapOnTileReveal())
-		nullkiller->dangerHitMap->reset();
 }
 
 void AIGateway::heroExchangeStarted(ObjectInstanceID hero1, ObjectInstanceID hero2, QueryID query)
@@ -551,7 +553,7 @@ std::optional<BattleAction> AIGateway::makeSurrenderRetreatDecision(const Battle
 	double fightRatio = ourStrength / (double)battleState.getEnemyStrength();
 
 	// if we have no towns - things are already bad, so retreat is not an option.
-	if(cb->getTownsInfo().size() && ourStrength < nullkiller->settings->getRetreatThresholdAbsolute() && fightRatio < nullkiller->settings->getRetreatThresholdRelative() && battleState.canFlee)
+	if(cb->getTownsInfo().size() && ourStrength < RETREAT_ABSOLUTE_THRESHOLD && fightRatio < RETREAT_THRESHOLD && battleState.canFlee)
 	{
 		return BattleAction::makeRetreat(battleState.ourSide);
 	}
@@ -668,7 +670,7 @@ void AIGateway::showBlockingDialog(const std::string & text, const std::vector<C
 				else if(objType == Obj::ARTIFACT || objType == Obj::RESOURCE)
 				{
 					bool dangerUnknown = danger == 0;
-					bool dangerTooHigh = ratio * nullkiller->settings->getSafeAttackRatio() > 1;
+					bool dangerTooHigh = ratio > (1 / SAFE_ATTACK_CONSTANT);
 
 					answer = !dangerUnknown && !dangerTooHigh;
 				}
@@ -761,7 +763,7 @@ void AIGateway::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstan
 	//you can't request action from action-response thread
 	requestActionASAP([=]()
 	{
-		if(removableUnits && up->tempOwner == down->tempOwner && nullkiller->settings->isGarrisonTroopsUsageAllowed() && !cb->getStartInfo()->isRestorationOfErathiaCampaign())
+		if(removableUnits && up->tempOwner == down->tempOwner && nullkiller->settings->isGarrisonTroopsUsageAllowed() && !cb->getStartInfo()->isSteadwickFallCampaignMission())
 		{
 			pickBestCreatures(down, up);
 		}
@@ -1053,7 +1055,7 @@ void AIGateway::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance
 				//FIXME: why are the above possible to be null?
 
 				bool emptySlotFound = false;
-				for(auto slot : artifact->getType()->getPossibleSlots().at(target->bearerType()))
+				for(auto slot : artifact->artType->getPossibleSlots().at(target->bearerType()))
 				{
 					if(target->isPositionFree(slot) && artifact->canBePutAt(target, slot, true)) //combined artifacts are not always allowed to move
 					{
@@ -1066,7 +1068,7 @@ void AIGateway::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance
 				}
 				if(!emptySlotFound) //try to put that atifact in already occupied slot
 				{
-					for(auto slot : artifact->getType()->getPossibleSlots().at(target->bearerType()))
+					for(auto slot : artifact->artType->getPossibleSlots().at(target->bearerType()))
 					{
 						auto otherSlot = target->getSlot(slot);
 						if(otherSlot && otherSlot->artifact) //we need to exchange artifact for better one
@@ -1077,8 +1079,8 @@ void AIGateway::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance
 							{
 								logAi->trace(
 									"Exchange artifacts %s <-> %s",
-									artifact->getType()->getNameTranslated(),
-									otherSlot->artifact->getType()->getNameTranslated());
+									artifact->artType->getNameTranslated(),
+									otherSlot->artifact->artType->getNameTranslated());
 
 								if(!otherSlot->artifact->canBePutAt(artHolder, location.slot, true))
 								{
@@ -1127,10 +1129,10 @@ void AIGateway::recruitCreatures(const CGDwelling * d, const CArmedInstance * re
 		{
 			for(auto stack : recruiter->Slots())
 			{
-				if(!stack.second->getType())
+				if(!stack.second->type)
 					continue;
 				
-				auto duplicatingSlot = recruiter->getSlotFor(stack.second->getCreature());
+				auto duplicatingSlot = recruiter->getSlotFor(stack.second->type);
 
 				if(duplicatingSlot != stack.first)
 				{

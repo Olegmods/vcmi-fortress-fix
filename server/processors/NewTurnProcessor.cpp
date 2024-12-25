@@ -18,7 +18,6 @@
 #include "../../lib/IGameSettings.h"
 #include "../../lib/StartInfo.h"
 #include "../../lib/TerrainHandler.h"
-#include "../../lib/constants/StringConstants.h"
 #include "../../lib/entities/building/CBuilding.h"
 #include "../../lib/entities/faction/CTownHandler.h"
 #include "../../lib/gameState/CGameState.h"
@@ -60,14 +59,6 @@ void NewTurnProcessor::handleTimeEvents(PlayerColor color)
 			for (GameResID i : GameResID::ALL_RESOURCES())
 				if (event.resources[i])
 					iw.components.emplace_back(ComponentType::RESOURCE, i, event.resources[i]);
-		}
-
-		//remove objects specified by event
-		for(const ObjectInstanceID objectIdToRemove : event.deletedObjectsInstances)
-		{
-			auto objectInstance = gameHandler->getObj(objectIdToRemove, false);
-			if(objectInstance != nullptr)
-				gameHandler->removeObject(objectInstance, PlayerColor::NEUTRAL);
 		}
 		gameHandler->sendAndApply(iw); //show dialog
 	}
@@ -246,28 +237,6 @@ ResourceSet NewTurnProcessor::generatePlayerIncome(PlayerColor playerID, bool ne
 	for (auto obj :	state.getOwnedObjects())
 		incomeHandicapped += obj->asOwnable()->dailyIncome();
 
-	if (!state.isHuman())
-	{
-		// Initialize bonuses for different resources
-		int difficultyIndex = gameHandler->gameState()->getStartInfo()->difficulty;
-		const std::string & difficultyName = GameConstants::DIFFICULTY_NAMES[difficultyIndex];
-		const JsonNode & weeklyBonusesConfig = gameHandler->gameState()->getSettings().getValue(EGameSettings::RESOURCES_WEEKLY_BONUSES_AI);
-		const JsonNode & difficultyConfig = weeklyBonusesConfig[difficultyName];
-
-		// Distribute weekly bonuses over 7 days, depending on the current day of the week
-		for (GameResID i : GameResID::ALL_RESOURCES())
-		{
-			const std::string & name = GameConstants::RESOURCE_NAMES[i];
-			int weeklyBonus = difficultyConfig[name].Integer();
-			int dayOfWeek = gameHandler->gameState()->getDate(Date::DAY_OF_WEEK);
-			int dailyIncome = incomeHandicapped[i];
-			int amountTillToday = dailyIncome * weeklyBonus * (dayOfWeek-1) / 7 / 100;
-			int amountAfterToday = dailyIncome * weeklyBonus * dayOfWeek / 7 / 100;
-			int dailyBonusToday = amountAfterToday - amountTillToday;
-			incomeHandicapped[static_cast<GameResID>(i)] += dailyBonusToday;
-		}
-	}
-
 	return incomeHandicapped;
 }
 
@@ -376,7 +345,7 @@ void NewTurnProcessor::updateNeutralTownGarrison(const CGTownInstance * t, int c
 	// Check if town garrison already has unit of specified tier
 	for(const auto & slot : t->Slots())
 	{
-		const auto * creature = slot.second->getCreature();
+		const auto * creature = slot.second->type;
 
 		if (creature->getFactionID() != t->getFactionID())
 			continue;
@@ -454,7 +423,7 @@ RumorState NewTurnProcessor::pickNewRumor()
 				rumorId = *RandomGeneratorUtil::nextItem(sRumorTypes, rand);
 				if(rumorId == RumorState::RUMOR_GRAIL)
 				{
-					rumorExtra = gameHandler->gameState()->getTile(gameHandler->gameState()->map->grailPos)->getTerrainID().getNum();
+					rumorExtra = gameHandler->gameState()->getTile(gameHandler->gameState()->map->grailPos)->terType->getIndex();
 					break;
 				}
 
@@ -586,7 +555,7 @@ std::vector<SetMovePoints> NewTurnProcessor::updateHeroesMovementPoints()
 		{
 			auto ti = std::make_unique<TurnInfo>(h, 1);
 			// NOTE: this code executed when bonuses of previous day not yet updated (this happen in NewTurn::applyGs). See issue 2356
-			int32_t newMovementPoints = h->movementPointsLimitCached(gameHandler->gameState()->map->getTile(h->visitablePos()).isLand(), ti.get());
+			int32_t newMovementPoints = h->movementPointsLimitCached(gameHandler->gameState()->map->getTile(h->visitablePos()).terType->isLand(), ti.get());
 
 			if (newMovementPoints != h->movementPointsRemaining())
 				result.emplace_back(h->id, newMovementPoints, true);

@@ -245,7 +245,7 @@ bool CVCMIServer::prepareToStartGame()
 	{
 	case EStartMode::CAMPAIGN:
 		logNetwork->info("Preparing to start new campaign");
-		si->startTime = std::time(nullptr);
+		si->startTimeIso8601 = vstd::getDateTimeISO8601Basic(std::time(nullptr));
 		si->fileURI = mi->fileURI;
 		si->campState->setCurrentMap(campaignMap);
 		si->campState->setCurrentMapBonus(campaignBonus);
@@ -254,7 +254,7 @@ bool CVCMIServer::prepareToStartGame()
 
 	case EStartMode::NEW_GAME:
 		logNetwork->info("Preparing to start new game");
-		si->startTime = std::time(nullptr);
+		si->startTimeIso8601 = vstd::getDateTimeISO8601Basic(std::time(nullptr));
 		si->fileURI = mi->fileURI;
 		gh->init(si.get(), progressTracking);
 		break;
@@ -300,7 +300,7 @@ void CVCMIServer::onDisconnected(const std::shared_ptr<INetworkConnection> & con
 	std::shared_ptr<CConnection> c = findConnection(connection);
 
 	// player may have already disconnected via clientDisconnected call
-	if (c)
+	if (c && gh && getState() == EServerState::GAMEPLAY)
 	{
 		LobbyClientDisconnected lcd;
 		lcd.c = c;
@@ -1016,7 +1016,7 @@ void CVCMIServer::multiplayerWelcomeMessage()
 	if(humanPlayer < 2) // Singleplayer
 		return;
 
-	gh->playerMessages->broadcastSystemMessage(MetaString::createFromTextID("vcmi.broadcast.command"));
+	gh->playerMessages->broadcastSystemMessage("Use '!help' to list available commands");
 
 	for (const auto & pi : si->playerInfos)
 		if(!pi.second.handicap.startBonus.empty() || pi.second.handicap.percentIncome != 100 || pi.second.handicap.percentGrowth != 100)

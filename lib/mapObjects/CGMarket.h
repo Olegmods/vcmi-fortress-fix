@@ -15,21 +15,15 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-class MarketInstanceConstructor;
-
 class DLL_LINKAGE CGMarket : public CGObjectInstance, public IMarket
 {
-protected:
-	std::shared_ptr<MarketInstanceConstructor> getMarketHandler() const;
-
 public:
+	int marketEfficiency;
+	
 	CGMarket(IGameCallback *cb);
 	///IObjectInterface
 	void onHeroVisit(const CGHeroInstance * h) const override; //open trading window
 	void initObj(vstd::RNG & rand) override;//set skills for trade
-
-	std::string getPopupText(PlayerColor player) const override;
-	std::string getPopupText(const CGHeroInstance * hero) const override;
 
 	///IMarket
 	ObjectInstanceID getObjInstanceID() const override;
@@ -47,12 +41,7 @@ public:
 			h & marketModes;
 		}
 
-		if (h.version < Handler::Version::MARKET_TRANSLATION_FIX)
-		{
-			int unused = 0;
-			h & unused;
-		}
-
+		h & marketEfficiency;
 		if (h.version < Handler::Version::NEW_MARKETS)
 		{
 			std::string speech;
@@ -74,7 +63,7 @@ class DLL_LINKAGE CGBlackMarket : public CGMarket
 public:
 	using CGMarket::CGMarket;
 
-	std::vector<ArtifactID> artifacts; //available artifacts
+	std::vector<const CArtifact *> artifacts; //available artifacts
 
 	void newTurn(vstd::RNG & rand) const override; //reset artifacts for black market every month
 	std::vector<TradeItemBuy> availableItemsIds(EMarketMode mode) const override;
@@ -82,24 +71,7 @@ public:
 	template <typename Handler> void serialize(Handler &h)
 	{
 		h & static_cast<CGMarket&>(*this);
-		if (h.version < Handler::Version::REMOVE_VLC_POINTERS)
-		{
-			int32_t size = 0;
-			h & size;
-			for (int32_t i = 0; i < size; ++i)
-			{
-				bool isNull = false;
-				ArtifactID artifact;
-				h & isNull;
-				if (!isNull)
-					h & artifact;
-				artifacts.push_back(artifact);
-			}
-		}
-		else
-		{
-			h & artifacts;
-		}
+		h & artifacts;
 	}
 };
 
@@ -107,8 +79,8 @@ class DLL_LINKAGE CGUniversity : public CGMarket
 {
 public:
 	using CGMarket::CGMarket;
-
-	std::string getSpeechTranslated() const;
+	std::string speech; //currently shown only in university
+	std::string title;
 
 	std::vector<TradeItemBuy> skills; //available skills
 
@@ -119,11 +91,10 @@ public:
 	{
 		h & static_cast<CGMarket&>(*this);
 		h & skills;
-		if (h.version >= Handler::Version::NEW_MARKETS && h.version < Handler::Version::MARKET_TRANSLATION_FIX)
+		if (h.version >= Handler::Version::NEW_MARKETS)
 		{
-			std::string temp;
-			h & temp;
-			h & temp;
+			h & speech;
+			h & title;
 		}
 	}
 };

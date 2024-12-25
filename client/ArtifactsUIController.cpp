@@ -26,7 +26,6 @@
 ArtifactsUIController::ArtifactsUIController()
 {
 	numOfMovedArts = 0;
-	numOfArtsAskAssembleSession = 0;
 }
 
 bool ArtifactsUIController::askToAssemble(const ArtifactLocation & al, const bool onlyEquipped, const bool checkIgnored)
@@ -72,7 +71,7 @@ bool ArtifactsUIController::askToAssemble(const CGHeroInstance * hero, const Art
 					}
 
 					bool assembleConfirmed = false;
-					MetaString message = MetaString::createFromTextID(art->getType()->getDescriptionTextID());
+					MetaString message = MetaString::createFromTextID(art->artType->getDescriptionTextID());
 					message.appendEOL();
 					message.appendEOL();
 					if(combinedArt->isFused())
@@ -108,10 +107,10 @@ bool ArtifactsUIController::askToDisassemble(const CGHeroInstance * hero, const 
 
 	if(art->hasParts())
 	{
-		if(ArtifactUtils::isSlotBackpack(slot) && !ArtifactUtils::isBackpackFreeSlots(hero, art->getType()->getConstituents().size() - 1))
+		if(ArtifactUtils::isSlotBackpack(slot) && !ArtifactUtils::isBackpackFreeSlots(hero, art->artType->getConstituents().size() - 1))
 			return false;
 
-		MetaString message = MetaString::createFromTextID(art->getType()->getDescriptionTextID());
+		MetaString message = MetaString::createFromTextID(art->artType->getDescriptionTextID());
 		message.appendEOL();
 		message.appendEOL();
 		message.appendRawString(CGI->generaltexth->allTexts[733]); // Do you wish to disassemble this artifact?

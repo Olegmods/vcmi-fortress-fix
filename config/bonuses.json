@@ -399,14 +399,6 @@
 		}
 	},
 
-	"MECHANICAL":
-	{
-		"graphics":
-		{
-			"icon":  "zvs/Lib1.res/Mechanical"
-		}
-	},
-
 	"RANDOM_SPELLCASTER":
 	{
 		"graphics":

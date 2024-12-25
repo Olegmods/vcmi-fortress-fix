@@ -11,7 +11,7 @@
 #include "ActiveModsInSaveList.h"
 
 #include "../VCMI_Lib.h"
-#include "ModDescription.h"
+#include "CModInfo.h"
 #include "CModHandler.h"
 #include "ModIncompatibility.h"
 
@@ -21,13 +21,13 @@ std::vector<TModID> ActiveModsInSaveList::getActiveGameplayAffectingMods()
 {
 	std::vector<TModID> result;
 	for (auto const & entry : VLC->modh->getActiveMods())
-		if (VLC->modh->getModInfo(entry).affectsGameplay())
+		if (VLC->modh->getModInfo(entry).checkModGameplayAffecting())
 			result.push_back(entry);
 
 	return result;
 }
 
-ModVerificationInfo ActiveModsInSaveList::getVerificationInfo(TModID mod)
+const ModVerificationInfo & ActiveModsInSaveList::getVerificationInfo(TModID mod)
 {
 	return VLC->modh->getModInfo(mod).getVerificationInfo();
 }
@@ -44,10 +44,10 @@ void ActiveModsInSaveList::verifyActiveMods(const std::map<TModID, ModVerificati
 			missingMods.push_back(modList.at(compared.first).name);
 
 		if (compared.second == ModVerificationStatus::DISABLED)
-			missingMods.push_back(VLC->modh->getModInfo(compared.first).getName());
+			missingMods.push_back(VLC->modh->getModInfo(compared.first).getVerificationInfo().name);
 
 		if (compared.second == ModVerificationStatus::EXCESSIVE)
-			excessiveMods.push_back(VLC->modh->getModInfo(compared.first).getName());
+			excessiveMods.push_back(VLC->modh->getModInfo(compared.first).getVerificationInfo().name);
 	}
 
 	if(!missingMods.empty() || !excessiveMods.empty())

@@ -8,8 +8,6 @@
  *
  */
 #pragma once
-
-#include "../widgets/IVideoHolder.h"
 #include "../windows/CWindowObject.h"
 #include "../../lib/gameState/HighScore.h"
 #include "../../lib/gameState/GameStatistics.h"
@@ -71,7 +69,7 @@ public:
 	CHighScoreInput(std::string playerName, std::function<void(std::string text)> readyCB);
 };
 
-class CHighScoreInputScreen : public CWindowObject, public IVideoHolder
+class CHighScoreInputScreen : public CWindowObject
 {
 	std::vector<std::shared_ptr<CLabel>> texts;
 	std::shared_ptr<CHighScoreInput> input;
@@ -84,8 +82,6 @@ class CHighScoreInputScreen : public CWindowObject, public IVideoHolder
 	bool won;
 	HighScoreCalculation calc;
 	StatisticDataSet stat;
-
-	void onVideoPlaybackFinished() override;
 public:
 	CHighScoreInputScreen(bool won, HighScoreCalculation calc, const StatisticDataSet & statistic);
 

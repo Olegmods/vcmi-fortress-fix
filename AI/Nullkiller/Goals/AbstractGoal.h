@@ -104,7 +104,6 @@ namespace Goals
 		bool isAbstract; SETTER(bool, isAbstract)
 		int value; SETTER(int, value)
 		ui64 goldCost; SETTER(ui64, goldCost)
-		TResources buildingCost; SETTER(TResources, buildingCost)
 		int resID; SETTER(int, resID)
 		int objid; SETTER(int, objid)
 		int aid; SETTER(int, aid)

@@ -12,7 +12,6 @@
 
 #include "../ResourceSet.h"
 #include "../texts/MetaString.h"
-#include "../int3.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -43,8 +42,6 @@ public:
 	ui32 firstOccurrence;
 	ui32 nextOccurrence; /// specifies after how many days the event will occur the next time; 0 if event occurs only one time
 
-	std::vector<ObjectInstanceID> deletedObjectsInstances;
-
 	template <typename Handler>
 	void serialize(Handler & h)
 	{
@@ -67,10 +64,6 @@ public:
 		h & computerAffected;
 		h & firstOccurrence;
 		h & nextOccurrence;
-		if(h.version >= Handler::Version::EVENT_OBJECTS_DELETION)
-		{
-			h & deletedObjectsInstances;
-		}
 	}
 	
 	virtual void serializeJson(JsonSerializeFormat & handler);
@@ -111,33 +104,20 @@ struct DLL_LINKAGE TerrainTile
 	Obj topVisitableId(bool excludeTop = false) const;
 	CGObjectInstance * topVisitableObj(bool excludeTop = false) const;
 	bool isWater() const;
-	bool isLand() const;
-	EDiggingStatus getDiggingStatus(bool excludeTop = true) const;
+	EDiggingStatus getDiggingStatus(const bool excludeTop = true) const;
 	bool hasFavorableWinds() const;
 
-	bool visitable() const;
-	bool blocked() const;
-
-	const TerrainType * getTerrain() const;
-	const RiverType * getRiver() const;
-	const RoadType * getRoad() const;
-
-	TerrainId getTerrainID() const;
-	RiverId getRiverID() const;
-	RoadId getRoadID() const;
-
-	bool hasRiver() const;
-	bool hasRoad() const;
-
-	TerrainId terrainType;
-	RiverId riverType;
-	RoadId roadType;
+	const TerrainType * terType;
+	const RiverType * riverType;
+	const RoadType * roadType;
 	ui8 terView;
 	ui8 riverDir;
 	ui8 roadDir;
 	/// first two bits - how to rotate terrain graphic (next two - river graphic, next two - road);
 	///	7th bit - whether tile is coastal (allows disembarking if land or block movement if water); 8th bit - Favorable Winds effect
 	ui8 extTileFlags;
+	bool visitable;
+	bool blocked;
 
 	std::vector<CGObjectInstance *> visitableObjects;
 	std::vector<CGObjectInstance *> blockingObjects;
@@ -145,49 +125,15 @@ struct DLL_LINKAGE TerrainTile
 	template <typename Handler>
 	void serialize(Handler & h)
 	{
-		if (h.version >= Handler::Version::REMOVE_VLC_POINTERS)
-		{
-			h & terrainType;
-		}
-		else
-		{
-			bool isNull = false;
-			h & isNull;
-			if (!isNull)
-				h & terrainType;
-		}
+		h & terType;
 		h & terView;
-		if (h.version >= Handler::Version::REMOVE_VLC_POINTERS)
-		{
-			h & riverType;
-		}
-		else
-		{
-			bool isNull = false;
-			h & isNull;
-			if (!isNull)
-				h & riverType;
-		}
+		h & riverType;
 		h & riverDir;
-		if (h.version >= Handler::Version::REMOVE_VLC_POINTERS)
-		{
-			h & roadType;
-		}
-		else
-		{
-			bool isNull = false;
-			h & isNull;
-			if (!isNull)
-				h & roadType;
-		}
+		h & roadType;
 		h & roadDir;
 		h & extTileFlags;
-		if (h.version < Handler::Version::REMOVE_VLC_POINTERS)
-		{
-			bool unused = false;
-			h & unused;
-			h & unused;
-		}
+		h & visitable;
+		h & blocked;
 		h & visitableObjects;
 		h & blockingObjects;
 	}

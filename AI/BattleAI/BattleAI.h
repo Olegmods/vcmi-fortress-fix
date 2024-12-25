@@ -62,6 +62,7 @@ class CBattleAI : public CBattleGameInterface
 	bool wasWaitingForRealize;
 	bool wasUnlockingGs;
 	int movesSkippedByDefense;
+	bool skipCastUntilNextBattle;
 
 public:
 	CBattleAI();

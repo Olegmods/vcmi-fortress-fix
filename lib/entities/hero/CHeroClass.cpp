@@ -23,23 +23,29 @@ SecondarySkill CHeroClass::chooseSecSkill(const std::set<SecondarySkill> & possi
 {
 	assert(!possibles.empty());
 
-	std::vector<int> weights;
-	std::vector<SecondarySkill> skills;
+	if (possibles.size() == 1)
+		return *possibles.begin();
 
+	int totalProb = 0;
+	for(const auto & possible : possibles)
+		if (secSkillProbability.count(possible) != 0)
+			totalProb += secSkillProbability.at(possible);
+
+	if (totalProb == 0) // may trigger if set contains only banned skills (0 probability)
+		return *RandomGeneratorUtil::nextItem(possibles, rand);
+
+	auto ran = rand.nextInt(totalProb - 1);
 	for(const auto & possible : possibles)
 	{
-		skills.push_back(possible);
 		if (secSkillProbability.count(possible) != 0)
-		{
-			int weight = secSkillProbability.at(possible);
-			weights.push_back(std::max(1, weight));
-		}
-		else
-			weights.push_back(1); // H3 behavior - banned skills have minimal (1) chance to be picked
+			ran -= secSkillProbability.at(possible);
+
+		if(ran < 0)
+			return possible;
 	}
 
-	int selectedIndex = RandomGeneratorUtil::nextItemWeighted(weights, rand);
-	return skills.at(selectedIndex);
+	assert(0); // should not be possible
+	return *possibles.begin();
 }
 
 bool CHeroClass::isMagicHero() const

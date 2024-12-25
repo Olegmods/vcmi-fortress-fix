@@ -2,7 +2,7 @@
 
 ## Fields with description of mod
 
-```json
+``` javascript
 {
 	// Name of your mod. While it does not have hard length limit
 	// it should not be longer than ~30 symbols to fit into allowed space
@@ -48,12 +48,6 @@
 	[
 		"baseMod"
 	],
-	
-	// List of mods if they are enabled, should be loaded before this one. This mod will overwrite any conflicting items from its soft dependency mods.
-	"softDepends" :
-	[
-		"baseMod"
-	],
  
 	// List of mods that can't be enabled in the same time as this one
 	"conflicts" :
@@ -91,7 +85,7 @@
 
 These are fields that are present only in local mod.json file
 
-```json
+``` javascript
  
 {
 	// Following section describes configuration files with content added by mod
@@ -103,19 +97,19 @@ These are fields that are present only in local mod.json file
 	// list of factions/towns configuration files
 	"factions" :
 	[
-		"config/faction.json"
+		"config/myMod/faction.json"
 	]
 
 	// List of hero classes configuration files
 	"heroClasses" :
 	[
-		"config/heroClasses.json"
+		"config/myMod/heroClasses.json"
 	],
 
 	// List of heroes configuration files
 	"heroes" :
 	[
-		"config/heroes.json"
+		"config/myMod/heroes.json"
 	],
 	
 	// List of configuration files for skills
@@ -124,68 +118,68 @@ These are fields that are present only in local mod.json file
 	// list of creature configuration files
 	"creatures" :
 	[
-		"config/creatures.json"
+		"config/myMod/creatures.json"
 	],
 
 	// List of artifacts configuration files
 	"artifacts" :
 	[
-		"config/artifacts.json"
+		"config/myMod/artifacts.json"
 	],
 
 	// List of objects defined in this mod
 	"objects" :
 	[
-		"config/objects.json"
+		"config/myMod/objects.json"
 	],
 
 	// List of spells defined in this mod
 	"spells" :
 	[
-		"config/spells.json"
+		"config/myMod/spells.json"
 	],
 	
 	// List of configuration files for terrains
 	"terrains" :
 	[
-		"config/terrains.json"
+		"config/myMod/terrains.json"
 	],
 	
 	// List of configuration files for roads
 	"roads" :
 	[
-		"config/roads.json"
+		"config/myMod/roads.json"
 	],
 	
 	// List of configuration files for rivers
 	"rivers" :
 	[
-		"config/rivers.json"
+		"config/myMod/rivers.json"
 	],
 	
 	// List of configuration files for battlefields
 	"battlefields" :
 	[
-		"config/battlefields.json"
+		"config/myMod/battlefields.json"
 	],
 	
 	// List of configuration files for obstacles
 	"obstacles" :
 	[
-		"config/obstacles.json"
+		"config/myMod/obstacles.json"
 	],
 
 	// List of RMG templates defined in this mod
 	"templates" :
 	[
-		"config/templates.json"
+		"config/myMod/templates.json"
 	],
 	
 	// Optional, primaly used by translation mods
 	// Defines strings that are translated by mod into base language specified in "language" field
 	"translations" :
 	[
-		"config/englishStrings.json
+		"config/myMod/englishStrings.json
 	]
 }
 ```
@@ -195,13 +189,13 @@ These are fields that are present only in local mod.json file
 In addition to field listed above, it is possible to add following block for any language supported by VCMI. If such block is present, Launcher will use this information for displaying translated mod information and game will use provided json files to translate mod to specified language.
 See [Translations](Translations.md) for more information
 
-```json
+```
 	"<language>" : {
 		"name" : "<translated name>",
 		"description" : "<translated description>",
 		"author" : "<translated author>",
 		"translations" : [
-			"config/<language>.json"
+			"config/<modName>/<language>.json"
 		]
 	},
 ```
@@ -210,7 +204,7 @@ See [Translations](Translations.md) for more information
 
 These are fields that are present only in remote repository and are generally not used in mod.json
 
-```json
+```jsonc
 {
 	// URL to mod.json that describes this mod
 	"mod" : "https://raw.githubusercontent.com/vcmi-mods/vcmi-extras/vcmi-1.4/mod.json",

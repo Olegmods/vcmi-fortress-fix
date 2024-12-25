@@ -97,10 +97,9 @@ std::optional<const CGObjectInstance *> ObjectClusterizer::getBlocker(const AIPa
 	{
 		auto guardPos = ai->cb->getGuardingCreaturePosition(node.coord);
 
-		if (ai->cb->isVisible(node.coord))
-			blockers = ai->cb->getVisitableObjs(node.coord);
+		blockers = ai->cb->getVisitableObjs(node.coord);
 
-		if(guardPos.valid() && ai->cb->isVisible(guardPos))
+		if(guardPos.valid())
 		{
 			auto guard = ai->cb->getTopObj(ai->cb->getGuardingCreaturePosition(node.coord));
 
@@ -475,11 +474,9 @@ void ObjectClusterizer::clusterizeObject(
 
 				heroesProcessed.insert(path.targetHero);
 
-				float priority = priorityEvaluator->evaluate(Goals::sptr(Goals::ExecuteHeroChain(path, obj)), PriorityEvaluator::PriorityTier::HUNTER_GATHER);
+				float priority = priorityEvaluator->evaluate(Goals::sptr(Goals::ExecuteHeroChain(path, obj)));
 
-				if(ai->settings->isUseFuzzy() && priority < MIN_PRIORITY)
-					continue;
-				else if (priority <= 0)
+				if(priority < MIN_PRIORITY)
 					continue;
 
 				ClusterMap::accessor cluster;
@@ -498,14 +495,12 @@ void ObjectClusterizer::clusterizeObject(
 
 		heroesProcessed.insert(path.targetHero);
 
-		float priority = priorityEvaluator->evaluate(Goals::sptr(Goals::ExecuteHeroChain(path, obj)), PriorityEvaluator::PriorityTier::HUNTER_GATHER);
+		float priority = priorityEvaluator->evaluate(Goals::sptr(Goals::ExecuteHeroChain(path, obj)));
 
-		if (ai->settings->isUseFuzzy() && priority < MIN_PRIORITY)
-			continue;
-		else if (priority <= 0)
+		if(priority < MIN_PRIORITY)
 			continue;
 
-		bool interestingObject = path.turn() <= 2 || priority > (ai->settings->isUseFuzzy() ? 0.5f : 0);
+		bool interestingObject = path.turn() <= 2 || priority > 0.5f;
 
 		if(interestingObject)
 		{

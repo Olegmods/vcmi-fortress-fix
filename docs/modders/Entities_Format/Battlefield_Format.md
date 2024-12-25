@@ -1,6 +1,6 @@
 # Battlefield Format
 
-```json
+```jsonc
 	// Human-readable name of the battlefield
 	"name" : "",
 	

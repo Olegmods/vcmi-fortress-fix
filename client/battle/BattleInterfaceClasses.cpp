@@ -398,7 +398,7 @@ BattleHero::BattleHero(const BattleInterface & owner, const CGHeroInstance * her
 	else
 		animationPath = hero->getHeroClass()->imageBattleMale;
 
-	animation = GH.renderHandler().loadAnimation(animationPath, EImageBlitMode::WITH_SHADOW);
+	animation = GH.renderHandler().loadAnimation(animationPath, EImageBlitMode::ALPHA);
 
 	pos.w = 64;
 	pos.h = 136;
@@ -1064,15 +1064,13 @@ StackQueue::StackBox::StackBox(StackQueue * owner):
 		icon = std::make_shared<CAnimImage>(AnimationPath::builtin("TWCRPORT"), 0, 0, 9, 1);
 		amount = std::make_shared<CLabel>(pos.w/2, pos.h - 8, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE);
 		roundRect = std::make_shared<TransparentFilledRectangle>(Rect(0, 0, 15, 18), ColorRGBA(0, 0, 0, 255), ColorRGBA(241, 216, 120, 255));
-		round = std::make_shared<CLabel>(6, 9, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+		round = std::make_shared<CLabel>(4, 2, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE);
 
-		Point iconPos(pos.w - 16, pos.h - 16);
+		int icon_x = pos.w - 17;
+		int icon_y = pos.h - 18;
 
-		defendIcon = std::make_shared<CPicture>(ImagePath::builtin("battle/QueueDefend"), iconPos);
-		waitIcon = std::make_shared<CPicture>(ImagePath::builtin("battle/QueueWait"), iconPos);
-
-		defendIcon->setEnabled(false);
-		waitIcon->setEnabled(false);
+		stateIcon = std::make_shared<CAnimImage>(AnimationPath::builtin("VCMI/BATTLEQUEUE/STATESSMALL"), 0, 0, icon_x, icon_y);
+		stateIcon->visible = false;
 	}
 	roundRect->disable();
 }
@@ -1105,17 +1103,25 @@ void StackQueue::StackBox::setUnit(const battle::Unit * unit, size_t turn, std::
 			const auto & font = GH.renderHandler().loadFont(FONT_SMALL);
 			int len = font->getStringWidth(tmp);
 			roundRect->pos.w = len + 6;
-			round->pos = Rect(roundRect->pos.center().x, roundRect->pos.center().y, 0, 0);
 			round->setText(tmp);
 		}
 
-		if(!owner->embedded)
+		if(stateIcon)
 		{
-			bool defended = unit->defended(turn) || (turn > 0 && unit->defended(turn - 1));
-			bool waited = unit->waited(turn) && !defended;
-
-			defendIcon->setEnabled(defended);
-			waitIcon->setEnabled(waited);
+			if(unit->defended((int)turn) || (turn > 0 && unit->defended((int)turn - 1)))
+			{
+				stateIcon->setFrame(0, 0);
+				stateIcon->visible = true;
+			}
+			else if(unit->waited((int)turn))
+			{
+				stateIcon->setFrame(1, 0);
+				stateIcon->visible = true;
+			}
+			else
+			{
+				stateIcon->visible = false;
+			}
 		}
 	}
 	else
@@ -1125,11 +1131,9 @@ void StackQueue::StackBox::setUnit(const battle::Unit * unit, size_t turn, std::
 		icon->visible = false;
 		icon->setFrame(0);
 		amount->setText("");
-		if(!owner->embedded)
-		{
-			defendIcon->setEnabled(false);
-			waitIcon->setEnabled(false);
-		}
+
+		if(stateIcon)
+			stateIcon->visible = false;
 	}
 }
 

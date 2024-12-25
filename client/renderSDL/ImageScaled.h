@@ -25,16 +25,16 @@ class ImageScaled final : public IImage
 private:
 
 	/// Original unscaled image
-	std::shared_ptr<const ISharedImage> source;
+	std::shared_ptr<ISharedImage> source;
 
 	/// Upscaled shadow of our image, may be null
-	std::shared_ptr<const ISharedImage> shadow;
+	std::shared_ptr<ISharedImage> shadow;
 
 	/// Upscaled main part of our image, may be null
-	std::shared_ptr<const ISharedImage> body;
+	std::shared_ptr<ISharedImage> body;
 
 	/// Upscaled overlay (player color, selection highlight) of our image, may be null
-	std::shared_ptr<const ISharedImage> overlay;
+	std::shared_ptr<ISharedImage> overlay;
 
 	ImageLocator locator;
 
@@ -44,9 +44,8 @@ private:
 	uint8_t alphaValue;
 	EImageBlitMode blitMode;
 
-	void prepareImages();
 public:
-	ImageScaled(const ImageLocator & locator, const std::shared_ptr<const ISharedImage> & source, EImageBlitMode mode);
+	ImageScaled(const ImageLocator & locator, const std::shared_ptr<ISharedImage> & source, EImageBlitMode mode);
 
 	void scaleInteger(int factor) override;
 	void scaleTo(const Point & size) override;
@@ -61,5 +60,8 @@ public:
 	void shiftPalette(uint32_t firstColorID, uint32_t colorsToMove, uint32_t distanceToMove) override;
 	void adjustPalette(const ColorFilter & shifter, uint32_t colorsToSkipMask) override;
 
-	std::shared_ptr<const ISharedImage> getSharedImage() const override;
+	void setShadowEnabled(bool on) override;
+	void setBodyEnabled(bool on) override;
+	void setOverlayEnabled(bool on) override;
+	std::shared_ptr<ISharedImage> getSharedImage() const override;
 };

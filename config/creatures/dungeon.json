@@ -74,10 +74,6 @@
 		"faction": "dungeon",
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
 			"strikeAndReturn" : 
 			{
 				"type" : "RETURN_AFTER_STRIKE"
@@ -105,10 +101,6 @@
 		"faction": "dungeon",
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
 			"strikeAndReturn" : 
 			{
 				"type" : "RETURN_AFTER_STRIKE"
@@ -138,18 +130,6 @@
 		"level": 3,
 		"faction": "dungeon",
 		"upgrades": ["evilEye"],
-		"shots" : 12,
-		"abilities" :
-		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			}
-		},
 		"graphics" :
 		{
 			"animation": "CBEHOL.DEF",
@@ -180,18 +160,6 @@
 		"index": 75,
 		"level": 3,
 		"faction": "dungeon",
-		"shots" : 24,
-		"abilities" :
-		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			}
-		},
 		"graphics" :
 		{
 			"animation": "CEVEYE.DEF",
@@ -222,18 +190,8 @@
 		"index": 76,
 		"level": 4,
 		"faction": "dungeon",
-		"doubleWide" : true,
-		"shots" : 4,
 		"abilities":
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
 			"petrification" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
@@ -266,18 +224,8 @@
 		"index": 77,
 		"level": 4,
 		"faction": "dungeon",
-		"doubleWide" : true,
-		"shots" : 8,
 		"abilities":
 		{
-			"shooter" :
-			{
-				"type" : "SHOOTER"
-			},
-			"noMeleePenalty" :
-			{
-				"type" : "NO_MELEE_PENALTY"
-			},
 			"petrification" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
@@ -366,14 +314,6 @@
 		"level": 6,
 		"faction": "dungeon",
 		"upgrades": ["scorpicore"],
-		"doubleWide" : true,
-		"abilities" :
-		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			}
-		},
 		"graphics" :
 		{
 			"animation": "CMCORE.DEF"
@@ -393,13 +333,8 @@
 		"index": 81,
 		"level": 6,
 		"faction": "dungeon",
-		"doubleWide" : true,
 		"abilities":
 		{
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
 			"paralize" :
 			{
 				"type" : "SPELL_AFTER_ATTACK",
@@ -426,18 +361,13 @@
 		"index": 82,
 		"level": 7,
 		"faction": "dungeon",
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" : 
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
+			"fireBreath" :
 			{
 				"type" : "TWO_HEX_ATTACK_BREATH"
 			},
@@ -445,11 +375,6 @@
 			{
 				"type" : "LEVEL_SPELL_IMMUNITY",
 				"val" : 3
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			}
 		},
 		"upgrades": ["blackDragon"],
@@ -471,18 +396,13 @@
 		"index": 83,
 		"level": 7,
 		"faction": "dungeon",
-		"doubleWide" : true,
 		"abilities":
 		{
 			"dragon" : 
 			{
 				"type" : "DRAGON_NATURE"
 			},
-			"canFly" :
-			{
-				"type" : "FLYING"
-			},
-			"twoHexAttackBreath" :
+			"fireBreath" :
 			{
 				"type" : "TWO_HEX_ATTACK_BREATH"
 			},
@@ -490,11 +410,6 @@
 			{
 				"type" : "LEVEL_SPELL_IMMUNITY",
 				"val" : 5
-			},
-			"KING_1" : // Will be affected by Slayer with no expertise
-			{
-				"type" : "KING",
-				"val" : 0
 			},
 			"hateTitans" :
 			{

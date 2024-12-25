@@ -1997,10 +1997,6 @@
 					},
 					{
 						"type" : "HAS_ANOTHER_BONUS_LIMITER",
-						"parameters" : [ "MECHANICAL" ]
-					},
-					{
-						"type" : "HAS_ANOTHER_BONUS_LIMITER",
 						"parameters" : [ "GARGOYLE" ]
 					},
 					{
@@ -2019,10 +2015,6 @@
 					{
 						"type" : "HAS_ANOTHER_BONUS_LIMITER",
 						"parameters" : [ "NON_LIVING" ]
-					},
-					{
-						"type" : "HAS_ANOTHER_BONUS_LIMITER",
-						"parameters" : [ "MECHANICAL" ]
 					},
 					{
 						"type" : "HAS_ANOTHER_BONUS_LIMITER",

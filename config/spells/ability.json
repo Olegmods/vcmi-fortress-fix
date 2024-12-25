@@ -88,7 +88,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"
@@ -160,7 +159,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "normal",
-				"bonus.MECHANICAL" : "normal",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "normal"
 			}
@@ -240,7 +238,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"
@@ -252,7 +249,7 @@
 		"targetType": "NO_TARGET",
 
 		"animation":{
-			"hit":[{ "defName" : "SP04_", "transparency" : 0.5}]
+			"hit":["SP04_"]
 		},
 		"sounds": {
 			"cast": "DEATHCLD"
@@ -273,7 +270,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"
@@ -361,7 +357,6 @@
 		"targetCondition" : {
 			"noneOf" : {
 				"bonus.NON_LIVING" : "absolute",
-				"bonus.MECHANICAL" : "absolute",
 				"bonus.SIEGE_WEAPON" : "absolute",
 				"bonus.UNDEAD" : "absolute",
 				"bonus.GARGOYLE" : "absolute"

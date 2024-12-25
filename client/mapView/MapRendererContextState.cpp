@@ -54,8 +54,9 @@ void MapRendererContextState::addObject(const CGObjectInstance * obj)
 			if(LOCPLINT->cb->isInTheMap(currTile) && obj->coveringAt(currTile))
 			{
 				auto & container = objects[currTile.z][currTile.x][currTile.y];
-				auto position = std::upper_bound(container.begin(), container.end(), obj->id, compareObjectBlitOrder);
-				container.insert(position, obj->id);
+
+				container.push_back(obj->id);
+				boost::range::sort(container, compareObjectBlitOrder);
 			}
 		}
 	}

@@ -20,30 +20,6 @@
     </message>
 </context>
 <context>
-    <name>ArtifactWidget</name>
-    <message>
-        <location filename="../inspector/artifactwidget.ui" line="29"/>
-        <location filename="../inspector/artifactwidget.ui" line="44"/>
-        <source>Artifact</source>
-        <translation>Artefakt</translation>
-    </message>
-    <message>
-        <location filename="../inspector/artifactwidget.ui" line="57"/>
-        <source>Equip where:</source>
-        <translation>Wo ausrüsten:</translation>
-    </message>
-    <message>
-        <location filename="../inspector/artifactwidget.ui" line="73"/>
-        <source>Save</source>
-        <translation>Speichern</translation>
-    </message>
-    <message>
-        <location filename="../inspector/artifactwidget.ui" line="86"/>
-        <source>Cancel</source>
-        <translation>Abbrechen</translation>
-    </message>
-</context>
-<context>
     <name>EventSettings</name>
     <message>
         <location filename="../mapsettings/eventsettings.ui" line="14"/>
@@ -66,7 +42,7 @@
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../mapsettings/eventsettings.cpp" line="147"/>
+        <location filename="../mapsettings/eventsettings.cpp" line="123"/>
         <source>New event</source>
         <translation>Neues Ereignis</translation>
     </message>
@@ -91,22 +67,22 @@
     <message>
         <location filename="../mapsettings/generalsettings.ui" line="52"/>
         <source>Author</source>
-        <translation>Autor</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mapsettings/generalsettings.ui" line="62"/>
         <source>Author contact (e.g. email)</source>
-        <translation>Autor-Kontakt (z.B. E-Mail)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mapsettings/generalsettings.ui" line="72"/>
         <source>Map Creation Time</source>
-        <translation>Kartenerstellungszeitpunkt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mapsettings/generalsettings.ui" line="86"/>
         <source>Map Version</source>
-        <translation>Kartenversion</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mapsettings/generalsettings.ui" line="120"/>
@@ -125,34 +101,6 @@
         <location filename="../generatorprogress.ui" line="29"/>
         <source>Generating map</source>
         <translation>Karte generieren</translation>
-    </message>
-</context>
-<context>
-    <name>HeroArtifactsWidget</name>
-    <message>
-        <location filename="../inspector/heroartifactswidget.ui" line="29"/>
-        <source>Artifacts</source>
-        <translation>Artefakte</translation>
-    </message>
-    <message>
-        <location filename="../inspector/heroartifactswidget.ui" line="71"/>
-        <source>Add</source>
-        <translation>Hinzufügen</translation>
-    </message>
-    <message>
-        <location filename="../inspector/heroartifactswidget.ui" line="87"/>
-        <source>Remove</source>
-        <translation>Entfernen</translation>
-    </message>
-    <message>
-        <location filename="../inspector/heroartifactswidget.ui" line="130"/>
-        <source>Slot</source>
-        <translation>Slot</translation>
-    </message>
-    <message>
-        <location filename="../inspector/heroartifactswidget.ui" line="135"/>
-        <source>Artifact</source>
-        <translation>Artefakt</translation>
     </message>
 </context>
 <context>
@@ -295,519 +243,423 @@
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="63"/>
-        <location filename="../mainwindow.ui" line="1032"/>
-        <source>Open Recent</source>
-        <translation>Zuletzt geöffnet</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="77"/>
+        <location filename="../mainwindow.ui" line="70"/>
         <source>Map</source>
         <translation>Karte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="88"/>
+        <location filename="../mainwindow.ui" line="81"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="101"/>
+        <location filename="../mainwindow.ui" line="94"/>
         <source>View</source>
         <translation>Ansicht</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="113"/>
+        <location filename="../mainwindow.ui" line="106"/>
         <source>Player</source>
         <translation>Spieler</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="133"/>
+        <location filename="../mainwindow.ui" line="126"/>
         <source>Toolbar</source>
         <translation>Werkzeugleiste</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="191"/>
+        <location filename="../mainwindow.ui" line="183"/>
         <source>Minimap</source>
         <translation>Minikarte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="264"/>
+        <location filename="../mainwindow.ui" line="256"/>
         <source>Map Objects View</source>
         <translation>Kartenobjekte-Ansicht</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="308"/>
+        <location filename="../mainwindow.ui" line="300"/>
         <source>Browser</source>
         <translation>Browser</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="386"/>
+        <location filename="../mainwindow.ui" line="378"/>
         <source>Inspector</source>
         <translation>Inspektor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="428"/>
+        <location filename="../mainwindow.ui" line="420"/>
         <source>Property</source>
         <translation>Eigenschaft</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="433"/>
+        <location filename="../mainwindow.ui" line="425"/>
         <source>Value</source>
         <translation>Wert</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="457"/>
+        <location filename="../mainwindow.ui" line="449"/>
         <source>Tools</source>
         <translation>Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="821"/>
+        <location filename="../mainwindow.ui" line="813"/>
         <source>Painting</source>
         <translation>Malen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="873"/>
+        <location filename="../mainwindow.ui" line="865"/>
         <source>Terrains</source>
         <translation>Terrains</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="916"/>
+        <location filename="../mainwindow.ui" line="908"/>
         <source>Roads</source>
         <translation>Straßen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="956"/>
+        <location filename="../mainwindow.ui" line="948"/>
         <source>Rivers</source>
         <translation>Flüsse</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="990"/>
+        <location filename="../mainwindow.ui" line="982"/>
         <source>Preview</source>
         <translation>Vorschau</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1024"/>
+        <location filename="../mainwindow.ui" line="1016"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1037"/>
-        <source>More...</source>
-        <translation>Mehr...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1045"/>
+        <location filename="../mainwindow.ui" line="1024"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1053"/>
+        <location filename="../mainwindow.ui" line="1032"/>
         <source>New</source>
         <translation>Neu</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1061"/>
+        <location filename="../mainwindow.ui" line="1040"/>
         <source>Save as...</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1064"/>
+        <location filename="../mainwindow.ui" line="1043"/>
         <source>Ctrl+Shift+S</source>
         <translation>Strg+Shift+S</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1069"/>
+        <location filename="../mainwindow.ui" line="1048"/>
         <source>U/G</source>
         <translation>U/G</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1072"/>
-        <location filename="../mainwindow.cpp" line="958"/>
+        <location filename="../mainwindow.ui" line="1051"/>
+        <location filename="../mainwindow.cpp" line="834"/>
         <source>View underground</source>
         <translation>Ansicht Untergrund</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1083"/>
+        <location filename="../mainwindow.ui" line="1062"/>
         <source>Pass</source>
         <translation>Passierbar</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1091"/>
+        <location filename="../mainwindow.ui" line="1070"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1099"/>
+        <location filename="../mainwindow.ui" line="1078"/>
         <source>Copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1107"/>
+        <location filename="../mainwindow.ui" line="1086"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1115"/>
+        <location filename="../mainwindow.ui" line="1094"/>
         <source>Fill</source>
         <translation>Füllen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1118"/>
+        <location filename="../mainwindow.ui" line="1097"/>
         <source>Fills the selection with obstacles</source>
         <translation>Füllt die Auswahl mit Hindernissen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1129"/>
+        <location filename="../mainwindow.ui" line="1108"/>
         <source>Grid</source>
         <translation>Raster</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1140"/>
+        <location filename="../mainwindow.ui" line="1119"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1143"/>
+        <location filename="../mainwindow.ui" line="1122"/>
         <source>Map title and description</source>
         <translation>Titel und Beschreibung der Karte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1154"/>
+        <location filename="../mainwindow.ui" line="1133"/>
         <source>Players settings</source>
         <translation>Spieler-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1165"/>
-        <location filename="../mainwindow.ui" line="1168"/>
+        <location filename="../mainwindow.ui" line="1144"/>
+        <location filename="../mainwindow.ui" line="1147"/>
         <source>Undo</source>
         <translation>Rückgängig</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1182"/>
+        <location filename="../mainwindow.ui" line="1161"/>
         <source>Redo</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1196"/>
+        <location filename="../mainwindow.ui" line="1175"/>
         <source>Erase</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1207"/>
+        <location filename="../mainwindow.ui" line="1186"/>
         <source>Neutral</source>
         <translation>Neutral</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1215"/>
+        <location filename="../mainwindow.ui" line="1194"/>
         <source>Validate</source>
         <translation>Validieren</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1226"/>
-        <location filename="../mainwindow.cpp" line="1229"/>
-        <location filename="../mainwindow.cpp" line="1233"/>
-        <location filename="../mainwindow.cpp" line="1290"/>
+        <location filename="../mainwindow.ui" line="1205"/>
+        <location filename="../mainwindow.cpp" line="1105"/>
+        <location filename="../mainwindow.cpp" line="1109"/>
+        <location filename="../mainwindow.cpp" line="1166"/>
         <source>Update appearance</source>
         <translation>Aussehen aktualisieren</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1237"/>
+        <location filename="../mainwindow.ui" line="1216"/>
         <source>Recreate obstacles</source>
         <translation>Hindernisse neu erschaffen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1248"/>
+        <location filename="../mainwindow.ui" line="1227"/>
         <source>Player 1</source>
         <translation>Spieler 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1259"/>
+        <location filename="../mainwindow.ui" line="1238"/>
         <source>Player 2</source>
         <translation>Spieler 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1270"/>
+        <location filename="../mainwindow.ui" line="1249"/>
         <source>Player 3</source>
         <translation>Spieler 3</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1281"/>
+        <location filename="../mainwindow.ui" line="1260"/>
         <source>Player 4</source>
         <translation>Spieler 4</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1292"/>
+        <location filename="../mainwindow.ui" line="1271"/>
         <source>Player 5</source>
         <translation>Spieler 5</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1303"/>
+        <location filename="../mainwindow.ui" line="1282"/>
         <source>Player 6</source>
         <translation>Spieler 6</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1314"/>
+        <location filename="../mainwindow.ui" line="1293"/>
         <source>Player 7</source>
         <translation>Spieler 7</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1325"/>
+        <location filename="../mainwindow.ui" line="1304"/>
         <source>Player 8</source>
         <translation>Spieler 8</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1333"/>
+        <location filename="../mainwindow.ui" line="1312"/>
         <source>Export as...</source>
         <translation>Exportieren als...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1341"/>
+        <location filename="../mainwindow.ui" line="1320"/>
         <source>Translations</source>
         <translation>Übersetzungen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1344"/>
+        <location filename="../mainwindow.ui" line="1323"/>
         <source>Ctrl+T</source>
         <translation>Strg+T</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1349"/>
-        <location filename="../mainwindow.ui" line="1352"/>
+        <location filename="../mainwindow.ui" line="1328"/>
+        <location filename="../mainwindow.ui" line="1331"/>
         <source>h3m converter</source>
         <translation>h3m-Konverter</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1357"/>
+        <location filename="../mainwindow.ui" line="1336"/>
         <source>Lock</source>
         <translation>Sperren</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1360"/>
+        <location filename="../mainwindow.ui" line="1339"/>
         <source>Lock objects on map to avoid unnecessary changes</source>
         <translation>Objekte auf der Karte sperren, um unnötige Änderungen zu vermeiden</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1363"/>
+        <location filename="../mainwindow.ui" line="1342"/>
         <source>Ctrl+L</source>
         <translation>Strg+L</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1368"/>
+        <location filename="../mainwindow.ui" line="1347"/>
         <source>Unlock</source>
         <translation>Entsperren</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1371"/>
+        <location filename="../mainwindow.ui" line="1350"/>
         <source>Unlock all objects on the map</source>
         <translation>Entsperre alle Objekte auf der Karte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1374"/>
+        <location filename="../mainwindow.ui" line="1353"/>
         <source>Ctrl+Shift+L</source>
         <translation>Strg+Umschalt+L</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1379"/>
+        <location filename="../mainwindow.ui" line="1358"/>
         <source>Zoom in</source>
         <translation>Heranzoomen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1382"/>
+        <location filename="../mainwindow.ui" line="1361"/>
         <source>Ctrl+=</source>
         <translation>Strg+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1387"/>
+        <location filename="../mainwindow.ui" line="1366"/>
         <source>Zoom out</source>
         <translation>Herauszoomen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1390"/>
+        <location filename="../mainwindow.ui" line="1369"/>
         <source>Ctrl+-</source>
         <translation>Strg+-</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1395"/>
+        <location filename="../mainwindow.ui" line="1374"/>
         <source>Zoom reset</source>
         <translation>Zoom zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1398"/>
+        <location filename="../mainwindow.ui" line="1377"/>
         <source>Ctrl+Shift+=</source>
         <translation>Strg+Umschalt+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="303"/>
+        <location filename="../mainwindow.cpp" line="296"/>
         <source>Confirmation</source>
         <translation>Bestätigung</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="303"/>
+        <location filename="../mainwindow.cpp" line="296"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Ungespeicherte Änderungen gehen verloren, sind sie sicher?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="441"/>
+        <location filename="../mainwindow.cpp" line="422"/>
         <source>Open map</source>
         <translation>Karte öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="443"/>
+        <location filename="../mainwindow.cpp" line="424"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Alle unterstützten Karten (*.vmap *.h3m);;VCMI-Karten (*.vmap);;HoMM3-Karten (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="463"/>
-        <source>Recently Opened Files</source>
-        <translation>Kürzlich geöffnete Dateien</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="591"/>
+        <location filename="../mainwindow.cpp" line="487"/>
         <source>Save map</source>
         <translation>Karte speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="591"/>
+        <location filename="../mainwindow.cpp" line="487"/>
         <source>VCMI maps (*.vmap)</source>
         <translation>VCMI-Karten (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="780"/>
+        <location filename="../mainwindow.cpp" line="676"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="793"/>
-        <source>Towns</source>
-        <translation>Städte</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="794"/>
-        <source>Objects</source>
-        <translation>Objekte</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="795"/>
-        <source>Heroes</source>
-        <translation>Helden</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="796"/>
-        <source>Artifacts</source>
-        <translation>Artefakte</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="797"/>
-        <source>Resources</source>
-        <translation>Ressourcen</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="798"/>
-        <source>Banks</source>
-        <translation>Bänke</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="799"/>
-        <source>Dwellings</source>
-        <translation>Unterkünfte</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="800"/>
-        <source>Grounds</source>
-        <translation>Gelände</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="801"/>
-        <source>Teleports</source>
-        <translation>Teleporter</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="802"/>
-        <source>Mines</source>
-        <translation>Minen</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="803"/>
-        <source>Triggers</source>
-        <translation>Trigger</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="804"/>
-        <source>Monsters</source>
-        <translation>Monster</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="805"/>
-        <source>Quests</source>
-        <translation>Aufgaben</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="806"/>
-        <source>Wog Objects</source>
-        <translation>Wog Objekte</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="807"/>
-        <source>Obstacles</source>
-        <translation>Hindernisse</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="808"/>
-        <source>Other</source>
-        <translation>Anderes</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="962"/>
+        <location filename="../mainwindow.cpp" line="838"/>
         <source>View surface</source>
         <translation>Oberfläche anzeigen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1229"/>
+        <location filename="../mainwindow.cpp" line="1105"/>
         <source>No objects selected</source>
         <translation>Keine Objekte selektiert</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1233"/>
+        <location filename="../mainwindow.cpp" line="1109"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation>Diese Operation ist unumkehrbar. Möchten sie fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1290"/>
+        <location filename="../mainwindow.cpp" line="1166"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation>Fehler sind aufgetreten. %1 Objekte konnten nicht aktualisiert werden</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1330"/>
+        <location filename="../mainwindow.cpp" line="1206"/>
         <source>Save to image</source>
         <translation>Als Bild speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1349"/>
+        <location filename="../mainwindow.cpp" line="1225"/>
         <source>Select maps to convert</source>
         <translation>Zu konvertierende Karten auswählen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1351"/>
+        <location filename="../mainwindow.cpp" line="1227"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation>HoMM3-Karten (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1355"/>
+        <location filename="../mainwindow.cpp" line="1231"/>
         <source>Choose directory to save converted maps</source>
         <translation>Verzeichnis zum Speichern der konvertierten Karten wählen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1368"/>
+        <location filename="../mainwindow.cpp" line="1244"/>
         <source>Operation completed</source>
         <translation>Vorgang abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1368"/>
+        <location filename="../mainwindow.cpp" line="1244"/>
         <source>Successfully converted %1 maps</source>
         <translation>Erfolgreiche Konvertierung von %1 Karten</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1372"/>
+        <location filename="../mainwindow.cpp" line="1248"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation>Die Karte konnte nicht konvertiert werden. Vorgang abgebrochen</translation>
     </message>
@@ -992,12 +844,7 @@
         <translation>(Standard)</translation>
     </message>
     <message>
-        <location filename="../playerparams.cpp" line="27"/>
-        <source>No team</source>
-        <translation>Kein Team</translation>
-    </message>
-    <message>
-        <location filename="../playerparams.cpp" line="108"/>
+        <location filename="../playerparams.cpp" line="110"/>
         <source>Player ID: %1</source>
         <translation>Spieler-ID: %1</translation>
     </message>
@@ -1062,70 +909,55 @@
         <translation>Experte</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="40"/>
+        <location filename="../inspector/inspector.cpp" line="38"/>
         <source>Compliant</source>
         <translation>Konform</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="41"/>
+        <location filename="../inspector/inspector.cpp" line="39"/>
         <source>Friendly</source>
         <translation>Freundlich</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="42"/>
+        <location filename="../inspector/inspector.cpp" line="40"/>
         <source>Aggressive</source>
         <translation>Aggressiv</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="43"/>
+        <location filename="../inspector/inspector.cpp" line="41"/>
         <source>Hostile</source>
         <translation>Feindlich</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="44"/>
+        <location filename="../inspector/inspector.cpp" line="42"/>
         <source>Savage</source>
         <translation>Wild</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="357"/>
-        <location filename="../inspector/inspector.cpp" line="360"/>
-        <source>No patrol</source>
-        <translation>Keine Streife</translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../inspector/inspector.cpp" line="359"/>
-        <location filename="../inspector/inspector.cpp" line="360"/>
-        <source>%n tile(s)</source>
-        <translation>
-            <numerusform>%n Kachel</numerusform>
-            <numerusform>%n Kacheln</numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="875"/>
-        <location filename="../inspector/inspector.cpp" line="964"/>
+        <location filename="../inspector/inspector.cpp" line="847"/>
+        <location filename="../inspector/inspector.cpp" line="936"/>
         <source>neutral</source>
         <translation>neutral</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="873"/>
+        <location filename="../inspector/inspector.cpp" line="845"/>
         <source>UNFLAGGABLE</source>
         <translation>UNFLAGGBAR</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="385"/>
+        <location filename="../mapcontroller.cpp" line="405"/>
         <source>Can&apos;t place object</source>
-        <translation>Objekt kann nicht platziert werden</translation>
+        <translation type="unfinished">Objekt kann nicht platziert werden</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="555"/>
+        <location filename="../mapcontroller.cpp" line="577"/>
         <source>There can only be one grail object on the map.</source>
-        <translation>Es kann sich nur ein Gral auf der Karte befinden.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="561"/>
+        <location filename="../mapcontroller.cpp" line="583"/>
         <source>Hero %1 cannot be created as NEUTRAL.</source>
-        <translation>Held %1 kann nicht als NEUTRAL erstellt werden.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1251,12 +1083,12 @@
         <translation>Spieler</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="38"/>
+        <location filename="../inspector/questwidget.cpp" line="34"/>
         <source>None</source>
         <translation>Keine</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="40"/>
+        <location filename="../inspector/questwidget.cpp" line="36"/>
         <source>Day %1</source>
         <translation>Tag %1</translation>
     </message>
@@ -1524,18 +1356,18 @@
         <translation>Spieler</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="49"/>
+        <location filename="../inspector/rewardswidget.cpp" line="45"/>
         <source>None</source>
         <translation>Keine</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="51"/>
+        <location filename="../inspector/rewardswidget.cpp" line="47"/>
         <source>Day %1</source>
         <translation>Tag %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="238"/>
-        <location filename="../inspector/rewardswidget.cpp" line="609"/>
+        <location filename="../inspector/rewardswidget.cpp" line="234"/>
+        <location filename="../inspector/rewardswidget.cpp" line="605"/>
         <source>Reward %1</source>
         <translation>Belohnung %1</translation>
     </message>
@@ -1601,47 +1433,32 @@
         <translation>Tag des ersten Auftretens</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="91"/>
+        <location filename="../mapsettings/timedevent.ui" line="87"/>
         <source>Repeat after (0 = no repeat)</source>
         <translation>Wiederholung nach (0 = keine Wiederholung)</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="112"/>
+        <location filename="../mapsettings/timedevent.ui" line="108"/>
         <source>Affected players</source>
         <translation>Betroffene Spieler</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="135"/>
+        <location filename="../mapsettings/timedevent.ui" line="131"/>
         <source>Resources</source>
         <translation>Ressourcen</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="194"/>
+        <location filename="../mapsettings/timedevent.ui" line="190"/>
         <source>type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="199"/>
+        <location filename="../mapsettings/timedevent.ui" line="195"/>
         <source>qty</source>
         <translation>anz.</translation>
     </message>
     <message>
-        <location filename="../mapsettings/timedevent.ui" line="211"/>
-        <source>Objects to delete</source>
-        <translation>Objekte zum löschen</translation>
-    </message>
-    <message>
-        <location filename="../mapsettings/timedevent.ui" line="218"/>
-        <source>Add</source>
-        <translation>Hinzufügen</translation>
-    </message>
-    <message>
-        <location filename="../mapsettings/timedevent.ui" line="225"/>
-        <source>Remove</source>
-        <translation>Entfernen</translation>
-    </message>
-    <message>
-        <location filename="../mapsettings/timedevent.ui" line="235"/>
+        <location filename="../mapsettings/timedevent.ui" line="203"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
@@ -1656,37 +1473,37 @@
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="53"/>
         <source>Build all</source>
-        <translation>Alle bauen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="60"/>
         <source>Demolish all</source>
-        <translation>Alle zerstören</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="67"/>
         <source>Enable all</source>
-        <translation>Alle aktivieren</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="74"/>
         <source>Disable all</source>
-        <translation>Alle deaktivieren</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Type</source>
-        <translation>Typ</translation>
+        <translation type="unfinished">Typ</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Enabled</source>
-        <translation>Aktiviert</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Built</source>
-        <translation>Gebaut</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1694,77 +1511,77 @@
     <message>
         <location filename="../inspector/towneventdialog.ui" line="23"/>
         <source>Town event</source>
-        <translation>Stadt Ereignis</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="42"/>
         <source>General</source>
-        <translation>Allgemein</translation>
+        <translation type="unfinished">Allgemein</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="57"/>
         <source>Event name</source>
-        <translation>Ereignis-Name</translation>
+        <translation type="unfinished">Name des Ereignisses</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="64"/>
         <source>Type event message text</source>
-        <translation>Ereignistext eingeben</translation>
+        <translation type="unfinished">Ereignistext eingeben</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="85"/>
         <source>Day of first occurrence</source>
-        <translation>Tag des ersten Auftretens</translation>
+        <translation type="unfinished">Tag des ersten Auftretens</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="99"/>
         <source>Repeat after (0 = no repeat)</source>
-        <translation>Wiederholung nach (0 = keine Wiederholung)</translation>
+        <translation type="unfinished">Wiederholung nach (0 = keine Wiederholung)</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="123"/>
         <source>Affected players</source>
-        <translation>Betroffene Spieler</translation>
+        <translation type="unfinished">Betroffene Spieler</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="146"/>
         <source>affects human</source>
-        <translation>beeinflusst Menschen</translation>
+        <translation type="unfinished">beeinflusst Menschen</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="155"/>
         <source>affects AI</source>
-        <translation>beeinflusst KI</translation>
+        <translation type="unfinished">beeinflusst KI</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="166"/>
         <source>Resources</source>
-        <translation>Ressourcen</translation>
+        <translation type="unfinished">Ressourcen</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="198"/>
         <source>Buildings</source>
-        <translation>Gebäude</translation>
+        <translation type="unfinished">Gebäude</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="219"/>
         <source>Creatures</source>
-        <translation>Kreaturen</translation>
+        <translation type="unfinished">Kreaturen</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="258"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="170"/>
         <source>Creature level %1 / Creature level %1 Upgrade</source>
-        <translation>Kreaturlevel %1 / Kreaturlevel %1 Aufgerüstet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="212"/>
         <source>Day %1 - %2</source>
-        <translation>Tag %1 - %2</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1772,32 +1589,32 @@
     <message>
         <location filename="../inspector/towneventswidget.ui" line="29"/>
         <source>Town events</source>
-        <translation>Stadt Ereignisse</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="37"/>
         <source>Timed events</source>
-        <translation>Zeitlich begrenzte Ereignisse</translation>
+        <translation type="unfinished">Zeitlich begrenzte Ereignisse</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="63"/>
         <source>Add</source>
-        <translation>Hinzufügen</translation>
+        <translation type="unfinished">Hinzufügen</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="76"/>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation type="unfinished">Entfernen</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="106"/>
         <source>Day %1 - %2</source>
-        <translation>Tag %1 - %2</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="127"/>
         <source>New event</source>
-        <translation>Neues Ereignis</translation>
+        <translation type="unfinished">Neues Ereignis</translation>
     </message>
 </context>
 <context>
@@ -1805,17 +1622,17 @@
     <message>
         <location filename="../inspector/townspellswidget.ui" line="29"/>
         <source>Spells</source>
-        <translation>Zaubersprüche</translation>
+        <translation type="unfinished">Zaubersprüche</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="47"/>
         <source>Customize spells</source>
-        <translation>Zaubersprüche anpassen</translation>
+        <translation type="unfinished">Zaubersprüche anpassen</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="76"/>
         <source>Level 1</source>
-        <translation>Level 1</translation>
+        <translation type="unfinished">Level 1</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="93"/>
@@ -1824,7 +1641,7 @@
         <location filename="../inspector/townspellswidget.ui" line="231"/>
         <location filename="../inspector/townspellswidget.ui" line="277"/>
         <source>Spell that may appear in mage guild</source>
-        <translation>Zauberspruch, der in der Magiergilde erscheinen kann</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="100"/>
@@ -1833,27 +1650,27 @@
         <location filename="../inspector/townspellswidget.ui" line="238"/>
         <location filename="../inspector/townspellswidget.ui" line="284"/>
         <source>Spell that must appear in mage guild</source>
-        <translation>Zauberspruch, der in der Magiergilde erscheinen muss</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="122"/>
         <source>Level 2</source>
-        <translation>Level 2</translation>
+        <translation type="unfinished">Level 2</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="168"/>
         <source>Level 3</source>
-        <translation>Level 3</translation>
+        <translation type="unfinished">Level 3</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="214"/>
         <source>Level 4</source>
-        <translation>Level 4</translation>
+        <translation type="unfinished">Level 4</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="260"/>
         <source>Level 5</source>
-        <translation>Level 5</translation>
+        <translation type="unfinished">Level 5</translation>
     </message>
 </context>
 <context>
@@ -1945,17 +1762,17 @@
     <message>
         <location filename="../validator.cpp" line="148"/>
         <source>Spell scroll %1 doesn&apos;t have instance assigned and must be removed</source>
-        <translation>Zauberschriftrolle %1 hat keine Instanz zugewiesen und muss entfernt werden</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="154"/>
         <source>Artifact %1 is prohibited by map settings</source>
-        <translation>Artefakt %1 ist durch Karteneinstellungen verboten</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="168"/>
         <source>Player %1 has no towns and heroes assigned</source>
-        <translation>Spieler %1 hat keine Städte und Helden zugewiesen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="116"/>
@@ -2235,22 +2052,22 @@
     <message>
         <location filename="../windownewmap.ui" line="713"/>
         <source>Roads</source>
-        <translation>Straßen</translation>
+        <translation type="unfinished">Straßen</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="728"/>
         <source>Dirt</source>
-        <translation>Erde</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="748"/>
         <source>Gravel</source>
-        <translation>Kies</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="768"/>
         <source>Cobblestone</source>
-        <translation>Kopfsteinpflaster</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="813"/>
@@ -2296,27 +2113,27 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../mainwindow.cpp" line="112"/>
+        <location filename="../mainwindow.cpp" line="110"/>
         <source>Filepath of the map to open.</source>
         <translation>Dateipfad der zu öffnenden Karte.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="115"/>
+        <location filename="../mainwindow.cpp" line="113"/>
         <source>Extract original H3 archives into a separate folder.</source>
         <translation>Extrahieren Sie die Original-H3-Archive in einen separaten Ordner.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="116"/>
+        <location filename="../mainwindow.cpp" line="114"/>
         <source>From an extracted archive, it Splits TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 and Un44 into individual PNG&apos;s.</source>
         <translation>Aus einem extrahierten Archiv zerlegt es TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 und Un44 in einzelne PNGs.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="117"/>
+        <location filename="../mainwindow.cpp" line="115"/>
         <source>From an extracted archive, Converts single Images (found in Images folder) from .pcx to png.</source>
         <translation>Aus einem extrahierten Archiv werden einzelne Bilder (aus dem Ordner &quot;Images&quot;) von .pcx in png konvertiert.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="118"/>
+        <location filename="../mainwindow.cpp" line="116"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Löschen Sie die Originaldateien für die gesplitteten/konvertierten Dateien.</translation>
     </message>

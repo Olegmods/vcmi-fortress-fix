@@ -175,7 +175,7 @@ void ExplorationHelper::scanTile(const int3 & tile)
 				continue;
 			}
 
-			if(isSafeToVisit(hero, path.heroArmy, path.getTotalDanger(), ai->settings->getSafeAttackRatio()))
+			if(isSafeToVisit(hero, path.heroArmy, path.getTotalDanger()))
 			{
 				bestGoal = goal;
 				bestValue = ourValue;

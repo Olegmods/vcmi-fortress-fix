@@ -393,14 +393,9 @@ void MetaString::replaceName(const FactionID & id)
 	replaceTextID(id.toEntity(VLC)->getNameTextID());
 }
 
-void MetaString::replaceName(const MapObjectID & id)
+void MetaString::replaceName(const MapObjectID& id)
 {
 	replaceTextID(VLC->objtypeh->getObjectName(id, 0));
-}
-
-void MetaString::replaceName(const MapObjectID & id, const MapObjectSubID & subId)
-{
-	replaceTextID(VLC->objtypeh->getObjectName(id, subId));
 }
 
 void MetaString::replaceName(const PlayerColor & id)
@@ -443,7 +438,7 @@ void MetaString::replaceName(const CreatureID & id, TQuantity count) //adds sing
 
 void MetaString::replaceName(const CStackBasicDescriptor & stack)
 {
-	replaceName(stack.getId(), stack.count);
+	replaceName(stack.type->getId(), stack.count);
 }
 
 VCMI_LIB_NAMESPACE_END

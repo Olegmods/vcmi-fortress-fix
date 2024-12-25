@@ -266,6 +266,16 @@ void CRClickPopupInt::mouseDraggedPopup(const Point & cursorPosition, const Poin
 		close();
 }
 
+Point CInfoBoxPopup::toScreen(Point p)
+{
+	auto bounds = adventureInt->terrainAreaPixels();
+
+	vstd::abetween(p.x, bounds.top() + 100, bounds.bottom() - 100);
+	vstd::abetween(p.y, bounds.left() + 100, bounds.right() - 100);
+
+	return p;
+}
+
 void CInfoBoxPopup::mouseDraggedPopup(const Point & cursorPosition, const Point & lastUpdateDistance)
 {
 	if(!settings["adventure"]["rightButtonDrag"].Bool())
@@ -279,7 +289,7 @@ void CInfoBoxPopup::mouseDraggedPopup(const Point & cursorPosition, const Point 
 
 
 CInfoBoxPopup::CInfoBoxPopup(Point position, const CGTownInstance * town)
-	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("TOWNQVBK"), position)
+	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("TOWNQVBK"), toScreen(position))
 {
 	InfoAboutTown iah;
 	LOCPLINT->cb->getTownInfo(town, iah, LOCPLINT->localState->getCurrentArmy()); //todo: should this be nearest hero?
@@ -288,12 +298,10 @@ CInfoBoxPopup::CInfoBoxPopup(Point position, const CGTownInstance * town)
 	tooltip = std::make_shared<CTownTooltip>(Point(9, 10), iah);
 
 	addUsedEvents(DRAG_POPUP);
-
-	fitToScreen(10);
 }
 
 CInfoBoxPopup::CInfoBoxPopup(Point position, const CGHeroInstance * hero)
-	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("HEROQVBK"), position)
+	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("HEROQVBK"), toScreen(position))
 {
 	InfoAboutHero iah;
 	LOCPLINT->cb->getHeroInfo(hero, iah, LOCPLINT->localState->getCurrentArmy()); //todo: should this be nearest hero?
@@ -302,12 +310,10 @@ CInfoBoxPopup::CInfoBoxPopup(Point position, const CGHeroInstance * hero)
 	tooltip = std::make_shared<CHeroTooltip>(Point(9, 10), iah);
 	
 	addUsedEvents(DRAG_POPUP);
-
-	fitToScreen(10);
 }
 
 CInfoBoxPopup::CInfoBoxPopup(Point position, const CGGarrison * garr)
-	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("TOWNQVBK"), position)
+	: CWindowObject(RCLICK_POPUP | PLAYER_COLORED, ImagePath::builtin("TOWNQVBK"), toScreen(position))
 {
 	InfoAboutTown iah;
 	LOCPLINT->cb->getTownInfo(garr, iah);
@@ -316,19 +322,15 @@ CInfoBoxPopup::CInfoBoxPopup(Point position, const CGGarrison * garr)
 	tooltip = std::make_shared<CArmyTooltip>(Point(9, 10), iah);
 	
 	addUsedEvents(DRAG_POPUP);
-
-	fitToScreen(10);
 }
 
 CInfoBoxPopup::CInfoBoxPopup(Point position, const CGCreature * creature)
-	: CWindowObject(RCLICK_POPUP | BORDERED, ImagePath::builtin("DIBOXBCK"), position)
+	: CWindowObject(RCLICK_POPUP | BORDERED, ImagePath::builtin("DIBOXBCK"), toScreen(position))
 {
 	OBJECT_CONSTRUCTION;
 	tooltip = std::make_shared<CreatureTooltip>(Point(9, 10), creature);
 	
 	addUsedEvents(DRAG_POPUP);
-
-	fitToScreen(10);
 }
 
 std::shared_ptr<WindowBase>

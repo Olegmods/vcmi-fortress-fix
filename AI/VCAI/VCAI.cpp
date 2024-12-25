@@ -731,7 +731,7 @@ void VCAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * 
 	//you can't request action from action-response thread
 	requestActionASAP([=]()
 	{
-		if(removableUnits && !cb->getStartInfo()->isRestorationOfErathiaCampaign())
+		if(removableUnits && !cb->getStartInfo()->isSteadwickFallCampaignMission())
 			pickBestCreatures(down, up);
 
 		answerQuery(queryID, 0);
@@ -1180,7 +1180,7 @@ void VCAI::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance * ot
 				//FIXME: why are the above possible to be null?
 
 				bool emptySlotFound = false;
-				for(auto slot : artifact->getType()->getPossibleSlots().at(target->bearerType()))
+				for(auto slot : artifact->artType->getPossibleSlots().at(target->bearerType()))
 				{
 					if(target->isPositionFree(slot) && artifact->canBePutAt(target, slot, true)) //combined artifacts are not always allowed to move
 					{
@@ -1193,7 +1193,7 @@ void VCAI::pickBestArtifacts(const CGHeroInstance * h, const CGHeroInstance * ot
 				}
 				if(!emptySlotFound) //try to put that atifact in already occupied slot
 				{
-					for(auto slot : artifact->getType()->getPossibleSlots().at(target->bearerType()))
+					for(auto slot : artifact->artType->getPossibleSlots().at(target->bearerType()))
 					{
 						auto otherSlot = target->getSlot(slot);
 						if(otherSlot && otherSlot->artifact) //we need to exchange artifact for better one
@@ -1313,6 +1313,8 @@ bool VCAI::canRecruitAnyHero(const CGTownInstance * t) const
 	if(!t)
 		return false;
 	if(cb->getResourceAmount(EGameResID::GOLD) < GameConstants::HERO_GOLD_COST) //TODO: use ResourceManager
+		return false;
+	if(cb->getHeroesInfo().size() >= ALLOWED_ROAMING_HEROES)
 		return false;
 	if(cb->getHeroesInfo().size() >= cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_ON_MAP_CAP))
 		return false;
@@ -2816,7 +2818,7 @@ bool shouldVisit(HeroPtr h, const CGObjectInstance * obj)
 	{
 		for(auto slot : h->Slots())
 		{
-			if(slot.second->getType()->hasUpgrades())
+			if(slot.second->type->hasUpgrades())
 				return true; //TODO: check price?
 		}
 		return false;

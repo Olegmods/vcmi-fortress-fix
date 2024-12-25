@@ -21,15 +21,12 @@
 CArtifactsOfHeroMain::CArtifactsOfHeroMain(const Point & position)
 {
 	init(position, std::bind(&CArtifactsOfHeroBase::scrollBackpack, this, _1));
-	setClickPressedArtPlacesCallback(std::bind(&CArtifactsOfHeroBase::clickPressedArtPlace, this, _1, _2));
-	setShowPopupArtPlacesCallback(std::bind(&CArtifactsOfHeroBase::showPopupArtPlace, this, _1, _2));
 	enableGesture();
 }
 
 CArtifactsOfHeroMain::~CArtifactsOfHeroMain()
 {
-	if(curHero)
-		CArtifactsOfHeroBase::putBackPickedArtifact();
+	CArtifactsOfHeroBase::putBackPickedArtifact();
 }
 
 void CArtifactsOfHeroMain::keyPressed(EShortcut key)

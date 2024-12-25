@@ -92,7 +92,6 @@ public:
 	static constexpr si32 UNINITIALIZED_MANA = -1;
 	static constexpr ui32 UNINITIALIZED_MOVEMENT = -1;
 	static constexpr auto UNINITIALIZED_EXPERIENCE = std::numeric_limits<TExpType>::max();
-	static const ui32 NO_PATROLLING;
 
 	//std::vector<const CArtifact*> artifacts; //hero's artifacts from bag
 	//std::map<ui16, const CArtifact*> artifWorn; //map<position,artifact_id>; positions: 0 - head; 1 - shoulders; 2 - neck; 3 - right hand; 4 - left hand; 5 - torso; 6 - right ring; 7 - left ring; 8 - feet; 9 - misc1; 10 - misc2; 11 - misc3; 12 - misc4; 13 - mach1; 14 - mach2; 15 - mach3; 16 - mach4; 17 - spellbook; 18 - misc5
@@ -100,9 +99,10 @@ public:
 
 	struct DLL_LINKAGE Patrol
 	{
-		bool patrolling{false};
+		Patrol(){patrolling=false;initialPos=int3();patrolRadius=-1;};
+		bool patrolling;
 		int3 initialPos;
-		ui32 patrolRadius{NO_PATROLLING};
+		ui32 patrolRadius;
 		template <typename Handler> void serialize(Handler &h)
 		{
 			h & patrolling;
@@ -223,13 +223,10 @@ public:
 	int movementPointsAfterEmbark(int MPsBefore, int basicCost, bool disembark = false, const TurnInfo * ti = nullptr) const;
 
 	double getFightingStrength() const; // takes attack / defense skill into account
-	double getMagicStrength() const; // takes knowledge / spell power skill but also current mana, whether the hero owns a spell-book and whether that books contains anything into account
-	double getMagicStrengthForCampaign() const; // takes knowledge / spell power skill into account
+	double getMagicStrength() const; // takes knowledge / spell power skill into account
 	double getHeroStrength() const; // includes fighting and magic strength
-	double getHeroStrengthForCampaign() const; // includes fighting and the for-campaign-version of magic strength
 	ui64 getTotalStrength() const; // includes fighting strength and army strength
 	TExpType calculateXp(TExpType exp) const; //apply learning skill
-	int getBasePrimarySkillValue(PrimarySkill which) const; //the value of a base-skill without items or temporary bonuses
 
 	CStackBasicDescriptor calculateNecromancy (const BattleResult &battleResult) const;
 	void showNecromancyDialog(const CStackBasicDescriptor &raisedStack, vstd::RNG & rand) const;
@@ -244,7 +241,6 @@ public:
 	HeroTypeID getHeroTypeID() const;
 	void setHeroType(HeroTypeID type);
 
-	void initObj(vstd::RNG & rand) override;
 	void initHero(vstd::RNG & rand);
 	void initHero(vstd::RNG & rand, const HeroTypeID & SUBID);
 
@@ -304,7 +300,6 @@ public:
 	void attachToBoat(CGBoat* newBoat);
 	void boatDeserializationFix();
 	void deserializationFix();
-	void updateAppearance();
 
 	void pickRandomObject(vstd::RNG & rand) override;
 	void onHeroVisit(const CGHeroInstance * h) const override;
@@ -364,11 +359,8 @@ public:
 		h & boat;
 		if (h.version < Handler::Version::REMOVE_TOWN_PTR)
 		{
-			HeroTypeID type;
-			bool isNull = false;
-			h & isNull;
-			if(!isNull)
-				h & type;
+			CHero * type = nullptr;
+			h & type;
 		}
 		h & commander;
 		h & visitedObjects;

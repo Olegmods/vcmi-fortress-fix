@@ -98,7 +98,7 @@ CBuildingRect::CBuildingRect(CCastleBuildings * Par, const CGTownInstance * Town
 		border = GH.renderHandler().loadImage(str->borderName, EImageBlitMode::COLORKEY);
 
 	if(!str->areaName.empty())
-		area = GH.renderHandler().loadImage(str->areaName, EImageBlitMode::SIMPLE);
+		area = GH.renderHandler().loadImage(str->areaName, EImageBlitMode::ALPHA);
 }
 
 const CBuilding * CBuildingRect::getBuilding()
@@ -238,8 +238,7 @@ std::string CBuildingRect::getSubtitle()//hover text for building
 		return town->getTown()->buildings.at(getBuilding()->bid)->getNameTranslated();
 	else//dwellings - recruit %creature%
 	{
-		int level = BuildingID::getLevelFromDwelling(getBuilding()->bid);
-		auto & availableCreatures = town->creatures[level].second;
+		auto & availableCreatures = town->creatures[(bid-30)%town->getTown()->creatures.size()].second;
 		if(availableCreatures.size())
 		{
 			int creaID = availableCreatures.back();//taking last of available creatures
@@ -456,7 +455,7 @@ void CHeroGSlot::showPopupWindow(const Point & cursorPosition)
 {
 	if(hero)
 	{
-		GH.windows().createAndPushWindow<CInfoBoxPopup>(pos.center(), hero);
+		GH.windows().createAndPushWindow<CInfoBoxPopup>(Point(pos.x + 175, pos.y + 100), hero);
 	}
 }
 
@@ -2055,14 +2054,7 @@ void CMageGuildScreen::Scroll::clickPressed(const Point & cursorPosition)
 		auto cost = costBase * std::pow(town->spellResearchAcceptedCounter + 1, costExponent);
 
 		std::vector<std::shared_ptr<CComponent>> resComps;
-
-		int index = town->spellsAtLevel(level, false);
-		if (index >= town->spells[level].size())
-		{
-			LOCPLINT->showInfoDialog(CGI->generaltexth->translate("vcmi.spellResearch.noMoreSpells"));
-			return;
-		}
-		auto newSpell = town->spells[level].at(index);
+		auto newSpell = town->spells[level].at(town->spellsAtLevel(level, false));
 		resComps.push_back(std::make_shared<CComponent>(ComponentType::SPELL, spell->id));
 		resComps.push_back(std::make_shared<CComponent>(ComponentType::SPELL, newSpell));
 		resComps.back()->newLine = true;

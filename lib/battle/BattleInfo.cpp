@@ -303,7 +303,7 @@ BattleInfo * BattleInfo::setupBattle(const int3 & tile, TerrainId terrain, const
 
 		if(nullptr != warMachineArt && hex.isValid())
 		{
-			CreatureID cre = warMachineArt->getType()->getWarMachine();
+			CreatureID cre = warMachineArt->artType->getWarMachine();
 
 			if(cre != CreatureID::NONE)
 				currentBattle->generateNewStack(currentBattle->nextUnitId(), CStackBasicDescriptor(cre, 1), side, SlotID::WAR_MACHINES_SLOT, hex);

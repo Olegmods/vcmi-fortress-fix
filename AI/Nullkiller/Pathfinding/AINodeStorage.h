@@ -29,6 +29,9 @@ namespace NKAI
 {
 namespace AIPathfinding
 {
+	const int BUCKET_COUNT = 3;
+	const int BUCKET_SIZE = 7;
+	const int NUM_CHAINS = BUCKET_COUNT * BUCKET_SIZE;
 	const int CHAIN_MAX_DEPTH = 4;
 }
 
@@ -154,7 +157,7 @@ public:
 	static boost::mutex locker;
 	static uint32_t version;
 
-	AISharedStorage(int3 sizes, int numChains);
+	AISharedStorage(int3 mapSize);
 	~AISharedStorage();
 
 	STRONG_INLINE
@@ -193,9 +196,6 @@ public:
 	bool increaseHeroChainTurnLimit();
 	bool selectFirstActor();
 	bool selectNextActor();
-
-	int getBucketCount() const;
-	int getBucketSize() const;
 
 	std::vector<CGPathNode *> getInitialNodes() override;
 
@@ -298,7 +298,7 @@ public:
 
 	inline int getBucket(const ChainActor * actor) const
 	{
-		return ((uintptr_t)actor * 395) % getBucketCount();
+		return ((uintptr_t)actor * 395) % AIPathfinding::BUCKET_COUNT;
 	}
 
 	void calculateTownPortalTeleportations(std::vector<CGPathNode *> & neighbours);

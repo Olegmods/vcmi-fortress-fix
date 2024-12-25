@@ -199,11 +199,7 @@ void NetworkConnection::close()
 {
 	boost::system::error_code ec;
 	socket->close(ec);
-#if BOOST_VERSION >= 108700
-	timer->cancel();
-#else
 	timer->cancel(ec);
-#endif
 
 	//NOTE: ignoring error code, intended
 }

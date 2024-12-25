@@ -36,12 +36,16 @@ std::string StayAtTown::toString() const
 {
 	return "Stay at town " + town->getNameTranslated()
 		+ " hero " + hero->getNameTranslated()
-		+ ", mana: " + std::to_string(hero->mana)
-		+ " / " + std::to_string(hero->manaLimit());
+		+ ", mana: " + std::to_string(hero->mana);
 }
 
 void StayAtTown::accept(AIGateway * ai)
 {
+	if(hero->visitedTown != town)
+	{
+		logAi->error("Hero %s expected visiting town %s", hero->getNameTranslated(), town->getNameTranslated());
+	}
+
 	ai->nullkiller->lockHero(hero, HeroLockedReason::DEFENCE);
 }
 

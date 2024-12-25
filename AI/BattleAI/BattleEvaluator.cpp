@@ -119,14 +119,6 @@ std::vector<BattleHex> BattleEvaluator::getBrokenWallMoatHexes() const
 	return result;
 }
 
-bool BattleEvaluator::hasWorkingTowers() const
-{
-	bool keepIntact = cb->getBattle(battleID)->battleGetWallState(EWallPart::KEEP) != EWallState::NONE && cb->getBattle(battleID)->battleGetWallState(EWallPart::KEEP) != EWallState::DESTROYED;
-	bool upperIntact = cb->getBattle(battleID)->battleGetWallState(EWallPart::UPPER_TOWER) != EWallState::NONE && cb->getBattle(battleID)->battleGetWallState(EWallPart::UPPER_TOWER) != EWallState::DESTROYED;
-	bool bottomIntact = cb->getBattle(battleID)->battleGetWallState(EWallPart::BOTTOM_TOWER) != EWallState::NONE && cb->getBattle(battleID)->battleGetWallState(EWallPart::BOTTOM_TOWER) != EWallState::DESTROYED;
-	return keepIntact || upperIntact || bottomIntact;
-}
-
 std::optional<PossibleSpellcast> BattleEvaluator::findBestCreatureSpell(const CStack *stack)
 {
 	//TODO: faerie dragon type spell should be selected by server
@@ -169,14 +161,6 @@ BattleAction BattleEvaluator::selectStackAction(const CStack * stack)
 
 	auto moveTarget = scoreEvaluator.findMoveTowardsUnreachable(stack, *targets, damageCache, hb);
 	float score = EvaluationResult::INEFFECTIVE_SCORE;
-	auto enemyMellee = hb->getUnitsIf([this](const battle::Unit* u) -> bool
-		{
-			return u->unitSide() == BattleSide::ATTACKER && !hb->battleCanShoot(u);
-		});
-	bool siegeDefense = stack->unitSide() == BattleSide::DEFENDER
-		&& !stack->canShoot()
-		&& hasWorkingTowers()
-		&& !enemyMellee.empty();
 
 	if(targets->possibleAttacks.empty() && bestSpellcast.has_value())
 	{
@@ -190,7 +174,7 @@ BattleAction BattleEvaluator::selectStackAction(const CStack * stack)
 		logAi->trace("Evaluating attack for %s", stack->getDescription());
 #endif
 
-		auto evaluationResult = scoreEvaluator.findBestTarget(stack, *targets, damageCache, hb, siegeDefense);
+		auto evaluationResult = scoreEvaluator.findBestTarget(stack, *targets, damageCache, hb);
 		auto & bestAttack = evaluationResult.bestAttack;
 
 		cachedAttack.ap = bestAttack;
@@ -243,10 +227,15 @@ BattleAction BattleEvaluator::selectStackAction(const CStack * stack)
 						return BattleAction::makeDefend(stack);
 					}
 
-					bool isTargetOutsideFort = !hb->battleIsInsideWalls(bestAttack.from);
+					auto enemyMellee = hb->getUnitsIf([this](const battle::Unit * u) -> bool
+						{
+							return u->unitSide() == BattleSide::ATTACKER && !hb->battleCanShoot(u);
+						});
+
+					bool isTargetOutsideFort = bestAttack.dest.getY() < GameConstants::BFIELD_WIDTH - 4;
 					bool siegeDefense = stack->unitSide() == BattleSide::DEFENDER
 						&& !bestAttack.attack.shooting
-						&& hasWorkingTowers()
+						&& hb->battleGetFortifications().hasMoat
 						&& !enemyMellee.empty()
 						&& isTargetOutsideFort;
 
@@ -359,22 +348,6 @@ BattleAction BattleEvaluator::goTowardsNearest(const CStack * stack, std::vector
 {
 	auto reachability = cb->getBattle(battleID)->getReachability(stack);
 	auto avHexes = cb->getBattle(battleID)->battleGetAvailableHexes(reachability, stack, false);
-
-	auto enemyMellee = hb->getUnitsIf([this](const battle::Unit* u) -> bool
-		{
-			return u->unitSide() == BattleSide::ATTACKER && !hb->battleCanShoot(u);
-		});
-
-	bool siegeDefense = stack->unitSide() == BattleSide::DEFENDER
-		&& hasWorkingTowers()
-		&& !enemyMellee.empty();
-
-	if (siegeDefense)
-	{
-		vstd::erase_if(avHexes, [&](const BattleHex& hex) {
-			return !cb->getBattle(battleID)->battleIsInsideWalls(hex);
-		});
-	}
 
 	if(!avHexes.size() || !hexes.size()) //we are blocked or dest is blocked
 	{
@@ -702,7 +675,7 @@ bool BattleEvaluator::attemptCastingSpell(const CStack * activeStack)
 				spells::BattleCast cast(state.get(), hero, spells::Mode::HERO, ps.spell);
 				cast.castEval(state->getServerCallback(), ps.dest);
 
-				auto allUnits = state->battleGetUnitsIf([](const battle::Unit * u) -> bool { return u->isValidTarget(); });
+				auto allUnits = state->battleGetUnitsIf([](const battle::Unit * u) -> bool { return true; });
 
 				auto needFullEval = vstd::contains_if(allUnits, [&](const battle::Unit * u) -> bool
 					{
@@ -758,6 +731,7 @@ bool BattleEvaluator::attemptCastingSpell(const CStack * activeStack)
 
 					ps.value = scoreEvaluator.evaluateExchange(updatedAttack, cachedAttack.turn, *targets, innerCache, state);
 				}
+
 				for(const auto & unit : allUnits)
 				{
 					if(!unit->isValidTarget(true))
@@ -797,31 +771,11 @@ bool BattleEvaluator::attemptCastingSpell(const CStack * activeStack)
 							ps.value -= 4 * dpsReduce * scoreEvaluator.getNegativeEffectMultiplier();
 
 #if BATTLE_TRACE_LEVEL >= 1
-						// Ensure ps.dest is not empty before accessing the first element
-						if (!ps.dest.empty()) 
-						{
-							logAi->trace(
-								"Spell %s to %d affects %s (%d), dps: %2f oldHealth: %d newHealth: %d",
-								ps.spell->getNameTranslated(),
-								ps.dest.at(0).hexValue.hex,  // Safe to access .at(0) now
-								unit->creatureId().toCreature()->getNameSingularTranslated(),
-								unit->getCount(),
-								dpsReduce,
-								oldHealth,
-								newHealth);
-						}
-						else 
-						{
-							// Handle the case where ps.dest is empty
-							logAi->trace(
-								"Spell %s has no destination, affects %s (%d), dps: %2f oldHealth: %d newHealth: %d",
-								ps.spell->getNameTranslated(),
-								unit->creatureId().toCreature()->getNameSingularTranslated(),
-								unit->getCount(),
-								dpsReduce,
-								oldHealth,
-								newHealth);
-						}
+						logAi->trace(
+							"Spell affects %s (%d), dps: %2f",
+							unit->creatureId().toCreature()->getNameSingularTranslated(),
+							unit->getCount(),
+							dpsReduce);
 #endif
 					}
 				}

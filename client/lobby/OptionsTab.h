@@ -63,7 +63,8 @@ public:
 		std::map<PlayerColor, std::map<EGameResID, std::shared_ptr<CTextInput>>> textinputs;
 		std::vector<std::shared_ptr<CButton>> buttons;
 
-		void notFocusedClick() override;
+		bool receiveEvent(const Point & position, int eventType) const override;
+		void clickReleased(const Point & cursorPosition) override;
 	public:
 		HandicapWindow();
 	};
@@ -166,7 +167,7 @@ private:
 
 		void sliderMove(int slidPos);
 
-		void notFocusedClick() override;
+		bool receiveEvent(const Point & position, int eventType) const override;
 		void clickReleased(const Point & cursorPosition) override;
 		void showPopupWindow(const Point & cursorPosition) override;
 

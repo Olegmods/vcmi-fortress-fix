@@ -72,7 +72,7 @@ void TurnOrderProcessor::updateAndNotifyContactStatus()
 	{
 		// Simturns between all players have ended - send single global notification
 		if (!blockedContacts.empty())
-			gameHandler->playerMessages->broadcastSystemMessage(MetaString::createFromTextID("vcmi.broadcast.simturn.end"));
+			gameHandler->playerMessages->broadcastSystemMessage("Simultaneous turns have ended");
 	}
 	else
 	{
@@ -83,11 +83,11 @@ void TurnOrderProcessor::updateAndNotifyContactStatus()
 				continue;
 
 			MetaString message;
-			message.appendTextID("vcmi.broadcast.simturn.endBetween");
+			message.appendRawString("Simultaneous turns between players %s and %s have ended"); // FIXME: we should send MetaString itself and localize it on client side
 			message.replaceName(contact.a);
 			message.replaceName(contact.b);
 
-			gameHandler->playerMessages->broadcastSystemMessage(message);
+			gameHandler->playerMessages->broadcastSystemMessage(message.toString());
 		}
 	}
 
