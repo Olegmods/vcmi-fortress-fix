@@ -140,6 +140,7 @@ set(lib_MAIN_SRCS
 	mapObjectConstructors/DwellingInstanceConstructor.cpp
 	mapObjectConstructors/FlaggableInstanceConstructor.cpp
 	mapObjectConstructors/HillFortInstanceConstructor.cpp
+	mapObjectConstructors/MarketInstanceConstructor.cpp
 	mapObjectConstructors/ShipyardInstanceConstructor.cpp
 
 	mapObjects/CGCreature.cpp
@@ -246,7 +247,7 @@ set(lib_MAIN_SRCS
 
 	serializer/CLoadFile.cpp
 	serializer/CMemorySerializer.cpp
-	serializer/Connection.cpp
+	serializer/GameConnection.cpp
 	serializer/CSaveFile.cpp
 	serializer/CTypeList.cpp
 	serializer/JsonDeserializer.cpp
@@ -565,6 +566,7 @@ set(lib_MAIN_HEADERS
 	mapObjectConstructors/HillFortInstanceConstructor.h
 	mapObjectConstructors/FlaggableInstanceConstructor.h
 	mapObjectConstructors/IObjectInfo.h
+	mapObjectConstructors/MarketInstanceConstructor.h
 	mapObjectConstructors/RandomMapInfo.h
 	mapObjectConstructors/ShipyardInstanceConstructor.h
 	mapObjectConstructors/SObjectSounds.h
@@ -705,15 +707,17 @@ set(lib_MAIN_HEADERS
 	serializer/BinarySerializer.h
 	serializer/CLoadFile.h
 	serializer/CMemorySerializer.h
-	serializer/Connection.h
+	serializer/GameConnection.h
 	serializer/CSaveFile.h
 	serializer/CSerializer.h
 	serializer/CTypeList.h
+	serializer/GameConnectionID.h
 	serializer/JsonDeserializer.h
 	serializer/JsonSerializeFormat.h
 	serializer/JsonSerializer.h
 	serializer/JsonUpdater.h
 	serializer/ESerializationVersion.h
+	serializer/PlayerConnectionID.h
 	serializer/RegisterTypes.h
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
